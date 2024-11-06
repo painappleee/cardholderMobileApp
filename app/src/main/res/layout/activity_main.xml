@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".MainActivity" android:orientation="vertical" android:gravity="center_horizontal">
+    <TextView
+            android:layout_height="50dp"
+            android:text="Добавить карту"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_width="match_parent"
+            android:id="@+id/header" android:textColor="#FFFFFF" android:background="#673AB7" android:textSize="21sp"
+            android:gravity="center_vertical|center_horizontal" android:paddingLeft="20dp"/>
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                  android:orientation="vertical">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                      android:paddingLeft="20dp">
+            <TextView
+                    android:text="Название магазина"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" android:id="@+id/tVName" android:layout_marginRight="10dp"
+                    android:textColor="#000000"/>
+            <EditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="48dp"
+                    android:ems="10"
+                    android:id="@+id/etName" android:hint="магазин"
+                    android:gravity="center_horizontal|center_vertical"/>
+        </LinearLayout>
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                      android:paddingLeft="20dp">
+            <TextView
+                    android:text="Штрих-код"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" android:id="@+id/tvShtr" android:layout_marginRight="70dp"
+                    android:textColor="#000000"/>
+            <EditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="48dp"
+                    android:inputType="number"
+                    android:ems="10"
+                    android:id="@+id/etShtr" android:hint="56748932"
+                    android:gravity="center_horizontal|center_vertical"/>
+        </LinearLayout>
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                      android:paddingLeft="20dp">
+            <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content">
+                <CheckBox
+                        android:text="Накопительная"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" android:id="@+id/checkBox" android:layout_weight="0"
+                        android:textSize="14sp" android:gravity="center_horizontal|center_vertical"
+                        android:textColor="#000000"/>
+            </LinearLayout>
+            <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content"
+                          android:id="@+id/ltDisc">
+                <TextView
+                        android:text="Размер скидки"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" android:id="@+id/tvDisc" android:layout_marginRight="10dp"
+                        android:layout_marginLeft="20dp" android:gravity="center_horizontal|center_vertical"
+                        android:textColor="#000000"/>
+                <EditText
+                        android:layout_width="wrap_content"
+                        android:layout_height="48dp"
+                        android:inputType="number"
+                        android:ems="3"
+                        android:id="@+id/etDisc" android:hint="10" android:textAlignment="center"
+                        android:gravity="center_horizontal|center_vertical"/>
+                <TextView
+                        android:text="%"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" android:id="@+id/tvPr" android:layout_weight="0"
+                        android:gravity="center_horizontal|center_vertical" android:textSize="16sp"/>
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+    <Button
+            android:text="Добавить"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:id="@+id/btnAdd" app:cornerRadius="15dp"
+            android:gravity="center|center_horizontal|center_vertical"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="20dp"
+    />
+    <TextView
+            android:layout_height="50dp"
+            android:text="Ваши карты"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_width="match_parent"
+            android:id="@+id/header2" android:textColor="#FFFFFF" android:background="#673AB7" android:textSize="21sp"
+            android:gravity="center_vertical|center_horizontal" android:paddingLeft="20dp"/>
+    <ListView android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/listView">
+    </ListView>
+
+
+</LinearLayout>
