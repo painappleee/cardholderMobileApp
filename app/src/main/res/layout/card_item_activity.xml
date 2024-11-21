@@ -7,7 +7,7 @@
                 android:layout_height="wrap_content" android:id="@+id/tVName2" android:layout_marginRight="10dp"
                 android:textColor="#000000" android:gravity="center_vertical"/>
         <TextView
-                android:text="Продалитъ"
+                android:text="магазин"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" android:id="@+id/tVNameAns" android:layout_marginRight="10dp"
                 android:textColor="#000000" android:gravity="center_vertical"/>
@@ -19,7 +19,7 @@
                 android:layout_height="wrap_content" android:id="@+id/tvShtr2" android:layout_marginRight="70dp"
                 android:textColor="#000000" android:gravity="center_vertical"/>
         <TextView
-                android:text="6743829"
+                android:text="5367748923056"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" android:id="@+id/tvShtrAns" android:layout_marginRight="70dp"
                 android:textColor="#000000" android:gravity="center_vertical"/>
@@ -31,7 +31,7 @@
                 android:layout_height="wrap_content" android:id="@+id/tvisDisc" android:layout_marginRight="118dp"
                 android:textColor="#000000" android:gravity="center_vertical"/>
         <TextView
-                android:text=""
+                android:text="Скидочная"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" android:id="@+id/tvisDiscAns"
                 android:textColor="#000000" android:gravity="center_vertical"/>

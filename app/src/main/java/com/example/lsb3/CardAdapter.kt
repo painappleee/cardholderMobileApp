@@ -34,8 +34,8 @@ class CardAdapter(var context: Context, var cards: ArrayList<Card>): BaseAdapter
         val tvisDisc = convertView.findViewById<TextView>(R.id.tvisDiscAns)
         val ltDisc = convertView.findViewById<LinearLayout>(R.id.ltDisc2)
         val tvDisc = convertView.findViewById<TextView>(R.id.tvDiscAns)
-        ltDisc.isVisible = cards[position].isDisc
-        if (cards[position].isDisc){
+        ltDisc.isVisible = (cards[position].isDisc == true)
+        if (cards[position].isDisc == true){
             tvisDisc.text = "Дисконтная"
             tvDisc.text = cards[position].disc
         }

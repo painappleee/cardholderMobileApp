@@ -1,47 +1,56 @@
 package com.example.lsb3
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
-import android.widget.*
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
+import android.widget.ListView
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.isVisible
-
 
 class MainActivity : AppCompatActivity() {
+
+    private lateinit var resultLauncher: ActivityResultLauncher<Intent>
+    val cards = ArrayList<Card>()
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val chk = findViewById<CheckBox>(R.id.checkBox)
-        val ltDisc = findViewById<LinearLayout>(R.id.ltDisc)
-        val btnAdd = findViewById<Button>(R.id.btnAdd)
         val listView = findViewById<ListView>(R.id.listView)
-        val etName = findViewById<EditText>(R.id.etName)
-        val etShtr = findViewById<EditText>(R.id.etShtr)
-        val etDisc = findViewById<EditText>(R.id.etDisc)
+        val adapter = CardAdapter(this, cards)
+        listView.adapter = adapter
 
-        val cards = ArrayList<Card>()
-
-        chk.setOnCheckedChangeListener{ checkBox, isChecked ->
-            ltDisc.isVisible = !isChecked
+        resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                val data: Intent? = result.data
+                cards.add(Card(data?.getStringExtra("name"), data?.getStringExtra("shtr"),data?.getBooleanExtra("isDisc",false),data?.getStringExtra("disc")))
+                adapter.notifyDataSetChanged()
+            }
         }
 
-        btnAdd.setOnClickListener{
-            var disc: String? = null
-            if (etDisc.text.toString()!="")
-                disc = etDisc.text.toString()
-            cards.add(Card(etName.text.toString(),etShtr.text.toString(),!chk.isChecked, disc))
+    }
 
-            val adapter = CardAdapter(this, cards)
-            listView.adapter = adapter
-
-
-        }
-
-
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.main_menu, menu)
+        return true
     }
 
 
 
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_add -> {
+                intent = Intent(this, AddCardActivity::class.java)
+                resultLauncher.launch(intent)
 
-
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
 }
