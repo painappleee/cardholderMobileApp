@@ -24,20 +24,25 @@ class AddCardActivity: AppCompatActivity() {
             ltDisc.isVisible = !isChecked
         }
 
-
-
         btnAdd.setOnClickListener{
             var disc: String? = null
-            if (etDisc.text.toString()!="")
+            if (etDisc.text.isNotEmpty())
                 disc = etDisc.text.toString()
 
-            val returnIntent = Intent()
-            returnIntent.putExtra("name",etName.text.toString())
-            returnIntent.putExtra("shtr",etShtr.text.toString())
-            returnIntent.putExtra("isDisc",!chk.isChecked)
-            returnIntent.putExtra("disc",disc)
-            setResult(Activity.RESULT_OK, returnIntent)
-            finish()
+            var isDiscCorrect: Boolean = (chk.isChecked) || (!chk.isChecked && etDisc.text.isNotEmpty())
+
+            if (etName.text.isNotEmpty() && etShtr.text.isNotEmpty() && isDiscCorrect) {
+                val returnIntent = Intent()
+                returnIntent.putExtra("name", etName.text.toString())
+                returnIntent.putExtra("shtr", etShtr.text.toString())
+                returnIntent.putExtra("isDisc", !chk.isChecked)
+                returnIntent.putExtra("disc", disc)
+                setResult(Activity.RESULT_OK, returnIntent)
+                finish()
+            }
+            else{
+                Toast.makeText(applicationContext, "Заполните все поля!", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
