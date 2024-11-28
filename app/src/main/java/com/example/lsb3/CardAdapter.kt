@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.view.isVisible
@@ -26,11 +27,13 @@ class CardAdapter(var context: Context, var cards: ArrayList<Card>): BaseAdapter
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
         val inflater = LayoutInflater.from(context)
-        val convertView  = inflater.inflate(R.layout.card_item_activity,null)
+        val convertView  = inflater.inflate(R.layout.card_item,null)
         val tvName = convertView.findViewById<TextView>(R.id.tVNameAns)
         tvName.text = cards[position].name
         val tvShtr = convertView.findViewById<TextView>(R.id.tvShtrAns)
         tvShtr.text = cards[position].shtr
+        val ivShtr = convertView.findViewById<ImageView>(R.id.iVShtr)
+        ivShtr.setImageBitmap(cards[position].shtrImg)
         val tvisDisc = convertView.findViewById<TextView>(R.id.tvisDiscAns)
         val ltDisc = convertView.findViewById<LinearLayout>(R.id.ltDisc2)
         val tvDisc = convertView.findViewById<TextView>(R.id.tvDiscAns)

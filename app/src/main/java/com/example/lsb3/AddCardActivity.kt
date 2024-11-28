@@ -2,6 +2,7 @@ package com.example.lsb3
 
 import android.app.Activity
 import android.content.Intent
+import android.icu.number.IntegerWidth
 import android.os.Bundle
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
@@ -29,7 +30,7 @@ class AddCardActivity: AppCompatActivity() {
             if (etDisc.text.isNotEmpty())
                 disc = etDisc.text.toString()
 
-            var isDiscCorrect: Boolean = (chk.isChecked) || (!chk.isChecked && etDisc.text.isNotEmpty())
+            var isDiscCorrect: Boolean = (chk.isChecked) || (!chk.isChecked && disc!=null && etDisc.text.toString().toInt()<100 )
 
             if (etName.text.isNotEmpty() && etShtr.text.isNotEmpty() && isDiscCorrect) {
                 val returnIntent = Intent()
@@ -40,11 +41,23 @@ class AddCardActivity: AppCompatActivity() {
                 setResult(Activity.RESULT_OK, returnIntent)
                 finish()
             }
+            else if(disc!=null && etDisc.text.toString().toInt()>=100){
+                Toast.makeText(this, "Размер скидки не может быть больше 100%!", Toast.LENGTH_SHORT).show()
+            }
             else{
-                Toast.makeText(applicationContext, "Заполните все поля!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Заполните все поля!", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
 
 }
+/*маленький клас
+        поле мятик
+        поле шаик
+        поле игушка
+
+        метод играть(обект)
+        метод обнимать(малышка)
+        метод капризнитять(громкость)
+ */

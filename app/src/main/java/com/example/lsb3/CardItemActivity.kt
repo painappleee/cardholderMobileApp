@@ -6,6 +6,6 @@ import androidx.appcompat.app.AppCompatActivity
 class CardItemActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.card_item_activity)
+        setContentView(R.layout.card_item)
     }
 }
