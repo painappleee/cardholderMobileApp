@@ -1,20 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout android:layout_width="wrap_content" android:background="#CFCFCF" android:layout_height="wrap_content" android:orientation="vertical" xmlns:android="http://schemas.android.com/apk/res/android" >
+<LinearLayout android:layout_width="wrap_content" android:background="#EBD2FF"
+              android:layout_height="wrap_content" android:orientation="vertical"
+              xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_margin="5dp">
     <TextView
             android:text="магазин"
             android:layout_width="match_parent" android:layout_height="wrap_content"
             android:id="@+id/tVNameAns"
-            android:textColor="#000000" android:gravity="center_horizontal|center_vertical" android:textSize="25sp"/>
-    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:paddingBottom="5dp"
+            android:textColor="#000000" android:gravity="center_horizontal|center_vertical" android:textSize="20sp"/>
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
                   android:orientation="horizontal">
         <TextView
                 android:text="Скидочная"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent" android:id="@+id/tvisDiscAns"
                 android:textColor="#000000" android:gravity="center_vertical"
-                android:paddingLeft="15dp"
-                android:textSize="15sp"/>
-        <LinearLayout android:layout_width="match_parent" android:layout_height="39dp"
+                android:paddingLeft="15dp"/>
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
                       android:gravity="right|center_vertical" android:id="@+id/ltDisc2"
                       android:orientation="horizontal"
                         android:paddingRight="15dp">
@@ -22,16 +24,15 @@
                     android:text="10"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" android:id="@+id/tvDiscAns" android:layout_marginRight="5dp"
-                    android:textSize="20sp"
                     android:textColor="#000000"/>
             <TextView
                     android:text="%"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" android:id="@+id/tvPr2" android:layout_weight="0"
-                    android:textSize="20sp"/>
+                    />
         </LinearLayout>
     </LinearLayout>
-    <ImageView android:paddingRight="25dp" android:paddingLeft="25dp" android:layout_width="wrap_content" android:layout_height="wrap_content" android:gravity="center_vertical" android:id="@+id/iVShtr">
+    <ImageView android:paddingRight="15dp" android:paddingLeft="15dp" android:layout_width="wrap_content" android:layout_height="wrap_content" android:gravity="center_vertical" android:id="@+id/iVShtr">
     </ImageView>
     <TextView
                 android:text="5367748923056"

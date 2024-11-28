@@ -15,8 +15,9 @@
             android:layout_width="match_parent"
             android:id="@+id/header2" android:textColor="#FFFFFF" android:background="#673AB7" android:textSize="21sp"
             android:gravity="center_vertical|center_horizontal" android:paddingLeft="20dp"/>
-    <ListView android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/listView">
-    </ListView>
-
-
+    <view class="androidx.recyclerview.widget.RecyclerView"
+          android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/recView">
+    </view>
+    <Button android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:backgroundTint="#CDCDCD" android:text="+ добавить" android:id="@+id/buttonAdd"></Button>
 </LinearLayout>

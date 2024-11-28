@@ -9,44 +9,43 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.view.isVisible
+import androidx.recyclerview.widget.RecyclerView
 
+class CardAdapter(var context: Context, var cards: ArrayList<Card>): RecyclerView.Adapter<CardAdapter.CardViewHolder>() {
 
-class CardAdapter(var context: Context, var cards: ArrayList<Card>): BaseAdapter() {
-
-    override fun getCount(): Int {
+    override fun getItemCount(): Int {
         return cards.size
     }
 
-    override fun getItem(position: Int): Any {
-        return cards[position]
+    override fun onBindViewHolder(holder: CardViewHolder, position: Int) {
+        holder.tvName.text = cards[position].name
+        holder.tvShtr.text = cards[position].shtr
+        holder.ivShtr.setImageBitmap(cards[position].shtrImg)
+        holder.ltDisc.isVisible = (cards[position].isDisc == true)
+        if (cards[position].isDisc == true){
+            holder.tvisDisc.text = "Дисконтная"
+            holder.tvDisc.text = cards[position].disc
+        }
+        else{
+            holder.tvisDisc.text = "Накопительная"
+
+        }
     }
 
-    override fun getItemId(position: Int): Long {
-        return position.toLong()
-    }
 
-    override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CardViewHolder {
         val inflater = LayoutInflater.from(context)
-        val convertView  = inflater.inflate(R.layout.card_item,null)
+        val convertView  = inflater.inflate(R.layout.card_item,parent, false)
+
+        return CardViewHolder(convertView)
+    }
+
+    class CardViewHolder(convertView: View): RecyclerView.ViewHolder(convertView){
         val tvName = convertView.findViewById<TextView>(R.id.tVNameAns)
-        tvName.text = cards[position].name
         val tvShtr = convertView.findViewById<TextView>(R.id.tvShtrAns)
-        tvShtr.text = cards[position].shtr
         val ivShtr = convertView.findViewById<ImageView>(R.id.iVShtr)
-        ivShtr.setImageBitmap(cards[position].shtrImg)
         val tvisDisc = convertView.findViewById<TextView>(R.id.tvisDiscAns)
         val ltDisc = convertView.findViewById<LinearLayout>(R.id.ltDisc2)
         val tvDisc = convertView.findViewById<TextView>(R.id.tvDiscAns)
-        ltDisc.isVisible = (cards[position].isDisc == true)
-        if (cards[position].isDisc == true){
-            tvisDisc.text = "Дисконтная"
-            tvDisc.text = cards[position].disc
-        }
-        else{
-            tvisDisc.text = "Накопительная"
-
-        }
-        return convertView
     }
-
 }

@@ -7,10 +7,14 @@ import android.graphics.Color
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Button
 import android.widget.ListView
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.EncodeHintType
 import com.google.zxing.Writer
@@ -32,9 +36,12 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val listView = findViewById<ListView>(R.id.listView)
+        val recView = findViewById<RecyclerView>(R.id.recView)
         val adapter = CardAdapter(this, cards)
-        listView.adapter = adapter
+        val buttonAdd = findViewById<Button>(R.id.buttonAdd)
+
+        recView.adapter = adapter
+        recView.layoutManager = GridLayoutManager(this,2)
 
         resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
@@ -50,9 +57,16 @@ class MainActivity : AppCompatActivity() {
                 adapter.notifyDataSetChanged()
             }
         }
+
+        buttonAdd.setOnClickListener{
+            intent = Intent(this, AddCardActivity::class.java)
+            resultLauncher.launch(intent)
+        }
+
+
     }
 
-    fun createBarCode(codeData: String?): Bitmap? {
+    private fun createBarCode(codeData: String?): Bitmap? {
         return try {
             val hintMap = Hashtable<EncodeHintType, ErrorCorrectionLevel>()
             hintMap[EncodeHintType.ERROR_CORRECTION] = ErrorCorrectionLevel.L
