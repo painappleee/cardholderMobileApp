@@ -13,6 +13,12 @@ import android.view.View.OnLongClickListener
 
 class CardAdapter(var context: Context, var cards: ArrayList<Card>): RecyclerView.Adapter<CardAdapter.CardViewHolder>() {
 
+
+    fun removeItem(position: Int) {
+        cards.removeAt(position)
+        notifyItemRemoved(position)
+    }
+
     override fun getItemCount(): Int {
         return cards.size
     }
