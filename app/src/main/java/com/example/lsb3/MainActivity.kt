@@ -8,20 +8,18 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Button
-import android.widget.ListView
+import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.EncodeHintType
-import com.google.zxing.Writer
 import com.google.zxing.WriterException
 import com.google.zxing.common.BitMatrix
 import com.google.zxing.oned.Code128Writer
-import com.google.zxing.qrcode.QRCodeWriter
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel
 import java.util.*
 
@@ -29,7 +27,10 @@ import java.util.*
 class MainActivity : AppCompatActivity() {
 
     private lateinit var resultLauncher: ActivityResultLauncher<Intent>
-    val cards = ArrayList<Card>()
+    private lateinit var resultEditLauncher: ActivityResultLauncher<Intent>
+
+    private var position = -1
+    private val cards = ArrayList<Card>()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,8 +41,10 @@ class MainActivity : AppCompatActivity() {
         val adapter = CardAdapter(this, cards)
         val buttonAdd = findViewById<Button>(R.id.buttonAdd)
 
+
         recView.adapter = adapter
         recView.layoutManager = GridLayoutManager(this,2)
+
 
         resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
@@ -54,16 +57,50 @@ class MainActivity : AppCompatActivity() {
                 )
                 card.shtrImg = createBarCode(card.shtr)
                 cards.add(card)
-                adapter.notifyDataSetChanged()
+                adapter.notifyItemInserted(cards.size - 1)
+
+            }
+        }
+
+        resultEditLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                val data: Intent? = result.data
+                val card = Card(
+                    data?.getStringExtra("name"),
+                    data?.getStringExtra("shtr"),
+                    data?.getBooleanExtra("isDisc",false),
+                    data?.getStringExtra("disc")
+                )
+                card.shtrImg = createBarCode(card.shtr)
+                cards[position] = card
+                adapter.notifyItemChanged(position)
+                position = -1
+
             }
         }
 
         buttonAdd.setOnClickListener{
-            intent = Intent(this, AddCardActivity::class.java)
+            intent = Intent(this, AddEditCardActivity::class.java)
             resultLauncher.launch(intent)
         }
 
 
+
+    }
+
+    override fun onContextItemSelected(item: MenuItem): Boolean {
+        val intent = Intent(this, AddEditCardActivity::class.java)
+
+        position = item.groupId
+        intent.putExtra("name", cards[position].name)
+        intent.putExtra("shtr", cards[position].shtr)
+        intent.putExtra("isDisc", cards[position].isDisc)
+        if ( cards[item.groupId].isDisc!=false)
+            intent.putExtra("disc", cards[position].disc)
+
+        resultEditLauncher.launch(intent)
+
+        return super.onContextItemSelected(item)
     }
 
     private fun createBarCode(codeData: String?): Bitmap? {
@@ -103,7 +140,7 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.action_add -> {
-                intent = Intent(this, AddCardActivity::class.java)
+                intent = Intent(this, AddEditCardActivity::class.java)
                 resultLauncher.launch(intent)
                 true
             }

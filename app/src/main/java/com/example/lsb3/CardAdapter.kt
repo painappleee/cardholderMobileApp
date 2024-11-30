@@ -1,15 +1,15 @@
 package com.example.lsb3
 
 import android.content.Context
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.widget.BaseAdapter
+import android.view.*
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
+import android.view.View
+import android.view.View.OnLongClickListener
+
 
 class CardAdapter(var context: Context, var cards: ArrayList<Card>): RecyclerView.Adapter<CardAdapter.CardViewHolder>() {
 
@@ -26,10 +26,10 @@ class CardAdapter(var context: Context, var cards: ArrayList<Card>): RecyclerVie
             holder.tvisDisc.text = "Дисконтная"
             holder.tvDisc.text = cards[position].disc
         }
-        else{
+        else {
             holder.tvisDisc.text = "Накопительная"
-
         }
+
     }
 
 
@@ -40,12 +40,29 @@ class CardAdapter(var context: Context, var cards: ArrayList<Card>): RecyclerVie
         return CardViewHolder(convertView)
     }
 
-    class CardViewHolder(convertView: View): RecyclerView.ViewHolder(convertView){
-        val tvName = convertView.findViewById<TextView>(R.id.tVNameAns)
-        val tvShtr = convertView.findViewById<TextView>(R.id.tvShtrAns)
-        val ivShtr = convertView.findViewById<ImageView>(R.id.iVShtr)
-        val tvisDisc = convertView.findViewById<TextView>(R.id.tvisDiscAns)
-        val ltDisc = convertView.findViewById<LinearLayout>(R.id.ltDisc2)
-        val tvDisc = convertView.findViewById<TextView>(R.id.tvDiscAns)
+    class CardViewHolder(convertView: View): RecyclerView.ViewHolder(convertView), View.OnCreateContextMenuListener {
+        val tvName: TextView = convertView.findViewById(R.id.tVNameAns)
+        val tvShtr: TextView = convertView.findViewById(R.id.tvShtrAns)
+        val ivShtr: ImageView = convertView.findViewById(R.id.iVShtr)
+        val tvisDisc: TextView = convertView.findViewById(R.id.tvisDiscAns)
+        val ltDisc: LinearLayout = convertView.findViewById(R.id.ltDisc2)
+        val tvDisc: TextView = convertView.findViewById(R.id.tvDiscAns)
+        private val item: LinearLayout = convertView.findViewById(R.id.item)
+
+        init{
+            item.setOnCreateContextMenuListener(this)
+        }
+
+        override fun onCreateContextMenu(menu: ContextMenu?, v: View?, menuInfo: ContextMenu.ContextMenuInfo?) {
+            menu?.add(this.bindingAdapterPosition,121,0,"Редактировать")
+        }
+
+
+
+
+
+
     }
+
+
 }

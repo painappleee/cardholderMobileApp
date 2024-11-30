@@ -2,16 +2,15 @@ package com.example.lsb3
 
 import android.app.Activity
 import android.content.Intent
-import android.icu.number.IntegerWidth
 import android.os.Bundle
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 
-class AddCardActivity: AppCompatActivity() {
+class AddEditCardActivity: AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.add_card_activity)
+        setContentView(R.layout.add_edit_card_activity)
 
         val chk = findViewById<CheckBox>(R.id.checkBox)
         val ltDisc = findViewById<LinearLayout>(R.id.ltDisc)
@@ -19,7 +18,21 @@ class AddCardActivity: AppCompatActivity() {
         val etName = findViewById<EditText>(R.id.etName)
         val etShtr = findViewById<EditText>(R.id.etShtr)
         val etDisc = findViewById<EditText>(R.id.etDisc)
+        val header = findViewById<TextView>(R.id.header)
 
+
+        val intent = intent
+
+        if (intent.hasExtra("name")) {
+            header.text = "Редактировать карту"
+            btnAdd.text = "Сохранить"
+            etName.setText(intent.getStringExtra("name"))
+            etShtr.setText(intent.getStringExtra("shtr"))
+            chk.isChecked = !intent.getBooleanExtra("isDisc", true)
+            ltDisc.isVisible = !chk.isChecked
+            if (!chk.isChecked)
+                etDisc.setText(intent.getStringExtra("disc"))
+        }
 
         chk.setOnCheckedChangeListener{ checkBox, isChecked ->
             ltDisc.isVisible = !isChecked
