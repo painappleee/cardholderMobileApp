@@ -8,8 +8,6 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Button
-import android.widget.TextView
-import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -29,19 +27,28 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var resultLauncher: ActivityResultLauncher<Intent>
     private lateinit var resultEditLauncher: ActivityResultLauncher<Intent>
+    private val appSpecificStorageManager: AppSpecificStorageManager = AppSpecificStorageManager(this)
+
 
     private var position = -1
-    private val cards = ArrayList<Card>()
+    private var cards = ArrayList<Card>()
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+
+        cards = appSpecificStorageManager.read()
+
+        for (card in cards){
+            card.shtrImg = createBarCode(card.shtr)
+        }
+
         val recView = findViewById<RecyclerView>(R.id.recView)
         val adapter = CardAdapter(this, cards)
         val buttonAdd = findViewById<Button>(R.id.buttonAdd)
-
 
         recView.adapter = adapter
         recView.layoutManager = GridLayoutManager(this,2)
@@ -62,6 +69,7 @@ class MainActivity : AppCompatActivity() {
                 )
                 card.shtrImg = createBarCode(card.shtr)
                 cards.add(card)
+                appSpecificStorageManager.write(card)
                 adapter.notifyItemInserted(cards.size - 1)
 
             }
@@ -78,6 +86,7 @@ class MainActivity : AppCompatActivity() {
                 )
                 card.shtrImg = createBarCode(card.shtr)
                 cards[position] = card
+                appSpecificStorageManager.edit(position, card)
                 adapter.notifyItemChanged(position)
                 position = -1
 
@@ -154,7 +163,7 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    class SwipeToDeleteCallback(private val adapter: CardAdapter) : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+    inner class SwipeToDeleteCallback(private val adapter: CardAdapter) : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
 
         override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
             return false
@@ -163,6 +172,7 @@ class MainActivity : AppCompatActivity() {
         override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
             val position = viewHolder.bindingAdapterPosition
             adapter.removeItem(position)
+            appSpecificStorageManager.delete(position)
 
         }
 

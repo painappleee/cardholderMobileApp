@@ -1,0 +1,47 @@
+[33mcommit e9fb27a7a2b4c6f9c99241954938b6112dedb61a[m[33m ([m[1;36mHEAD -> [m[1;32mlab5[m[33m)[m
+Author: Ana <dns80791@gmail.com>
+Date:   Sun Dec 1 02:25:35 2024 +0800
+
+    added swipe remove
+
+[33mcommit 84eaa74a428ec0ab24f396f136ae79423fc21ee4[m
+Author: Ana <dns80791@gmail.com>
+Date:   Sun Dec 1 01:49:58 2024 +0800
+
+    added edit with context menu
+
+[33mcommit eb655432e8a6c3a82f51a7db46d62b8fd19ba956[m
+Author: Ana <dns80791@gmail.com>
+Date:   Fri Nov 29 03:29:39 2024 +0800
+
+    added recycle view
+
+[33mcommit 67282bf74acd9f692054a40423eb01e660e7ad31[m[33m ([m[1;32mmain[m[33m)[m
+Author: Ana <dns80791@gmail.com>
+Date:   Fri Nov 29 01:26:13 2024 +0800
+
+    added barcode generation
+
+[33mcommit e0dcb884462fd2934506ef5c4f6aae148a943464[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/lab4[m[33m, [m[1;32mlab4[m[33m)[m
+Author: Ana <dns80791@gmail.com>
+Date:   Thu Nov 21 21:16:45 2024 +0800
+
+    added toast for not filled fields
+
+[33mcommit 77cfdd995328043c6ccace67fdcd37621d3ca61d[m
+Author: Ana <dns80791@gmail.com>
+Date:   Thu Nov 21 20:36:19 2024 +0800
+
+    lab 4 done
+
+[33mcommit 53e2a85e320753c63f8fe1df4243f20df177a61a[m[33m ([m[1;31morigin/lab3[m[33m, [m[1;32mlab3[m[33m)[m
+Author: Ana <dns80791@gmail.com>
+Date:   Wed Nov 6 23:41:08 2024 +0800
+
+    lab 3 done
+
+[33mcommit bef51899572ec70f716be67db19646ebf1cfb715[m
+Author: Ana <dns80791@gmail.com>
+Date:   Wed Nov 6 23:40:20 2024 +0800
+
+    Initial commit
