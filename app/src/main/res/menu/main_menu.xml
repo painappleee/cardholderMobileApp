@@ -4,4 +4,8 @@
             android:id="@+id/action_add"
             android:orderInCategory="1"
             android:title="Добавить" />
+    <item
+            android:id="@+id/action_save"
+            android:orderInCategory="2"
+            android:title="Сохранить в PDF" />
 </menu>

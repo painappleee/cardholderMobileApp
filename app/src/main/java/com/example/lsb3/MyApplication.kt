@@ -7,9 +7,6 @@ class MyApplication : Application() {
     companion object {
         private var appContext: Context? = null
 
-        fun getAppContext(): Context? {
-            return appContext
-        }
     }
 
     override fun onCreate() {

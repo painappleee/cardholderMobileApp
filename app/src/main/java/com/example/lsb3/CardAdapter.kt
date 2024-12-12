@@ -61,6 +61,8 @@ class CardAdapter(var context: Context, var cards: ArrayList<Card>): RecyclerVie
 
         override fun onCreateContextMenu(menu: ContextMenu?, v: View?, menuInfo: ContextMenu.ContextMenuInfo?) {
             menu?.add(this.bindingAdapterPosition,121,0,"Редактировать")
+            menu?.add(this.bindingAdapterPosition,122,1,"Сохранить штрих-код")
+
         }
 
 

@@ -41,6 +41,7 @@ dependencies {
     implementation ("com.google.zxing:core:3.4.1")
     implementation ("com.google.zxing:javase:3.4.1")
     implementation ("androidx.recyclerview:recyclerview:1.2.1")
+    implementation ("com.itextpdf:itext7-core:7.1.15")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.2.1")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")

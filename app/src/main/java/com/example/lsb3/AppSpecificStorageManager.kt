@@ -27,6 +27,8 @@ class AppSpecificStorageManager(private val context: Context) {
                     writer.newLine()
                 }
             }
+
+
         }
         catch (e: IOException){
             e.printStackTrace()
@@ -43,13 +45,13 @@ class AppSpecificStorageManager(private val context: Context) {
             for ( i in cardsData.indices step 3){
                 val disc: List<String> =  cardsData[i+2].split(" ")
                 val card = Card(
-                    cardsData[i],
                     cardsData[i+1],
-                    disc[0].toBoolean(),
+                    cardsData[i],
+                    disc[0]=="1",
                     if (disc[0] == "1")
                         disc[1]
                     else
-                        null
+                        null,
                 )
                 cards.add(card)
             }

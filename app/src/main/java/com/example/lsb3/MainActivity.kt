@@ -29,6 +29,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var resultEditLauncher: ActivityResultLauncher<Intent>
     private val appSpecificStorageManager: AppSpecificStorageManager = AppSpecificStorageManager(this)
 
+    private val sharedStorageManager: SharedStorageManager = SharedStorageManager(this)
 
     private var position = -1
     private var cards = ArrayList<Card>()
@@ -156,6 +157,10 @@ class MainActivity : AppCompatActivity() {
             R.id.action_add -> {
                 intent = Intent(this, AddEditCardActivity::class.java)
                 resultLauncher.launch(intent)
+                true
+            }
+            R.id.action_save ->{
+                sharedStorageManager.saveToPdf(cards)
                 true
             }
             else -> super.onOptionsItemSelected(item)
