@@ -104,16 +104,21 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onContextItemSelected(item: MenuItem): Boolean {
-        val intent = Intent(this, AddEditCardActivity::class.java)
+        if (item.itemId == 121){
+            val intent = Intent(this, AddEditCardActivity::class.java)
 
-        position = item.groupId
-        intent.putExtra("name", cards[position].name)
-        intent.putExtra("shtr", cards[position].shtr)
-        intent.putExtra("isDisc", cards[position].isDisc)
-        if ( cards[item.groupId].isDisc!=false)
-            intent.putExtra("disc", cards[position].disc)
+            position = item.groupId
+            intent.putExtra("name", cards[position].name)
+            intent.putExtra("shtr", cards[position].shtr)
+            intent.putExtra("isDisc", cards[position].isDisc)
+            if ( cards[item.groupId].isDisc!=false)
+                intent.putExtra("disc", cards[position].disc)
 
-        resultEditLauncher.launch(intent)
+            resultEditLauncher.launch(intent)
+        }
+        else if (item.itemId == 122){
+            cards[item.groupId].shtrImg?.let { sharedStorageManager.saveBarcode(it) }
+        }
 
         return super.onContextItemSelected(item)
     }
