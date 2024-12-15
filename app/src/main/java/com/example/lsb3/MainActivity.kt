@@ -40,8 +40,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-
-        cards = appSpecificStorageManager.read()
+        //cards = appSpecificStorageManager.read()
+        cards = MyApplication.dbManager.getAllCards()
 
         for (card in cards){
             card.shtrImg = createBarCode(card.shtr)
@@ -69,7 +69,7 @@ class MainActivity : AppCompatActivity() {
                     data.getStringExtra("disc")
                 )
                 card.shtrImg = createBarCode(card.shtr)
-                println(MyApplication.dbManager.getCardId(card))
+                card.id = MyApplication.dbManager.getCardId(card)
                 cards.add(card)
                 appSpecificStorageManager.write(card)
                 adapter.notifyItemInserted(cards.size - 1)
@@ -182,6 +182,8 @@ class MainActivity : AppCompatActivity() {
 
         override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
             val position = viewHolder.bindingAdapterPosition
+            println(cards[position].id)
+            MyApplication.dbManager.deleteCard(cards[position].id)
             adapter.removeItem(position)
             appSpecificStorageManager.delete(position)
 

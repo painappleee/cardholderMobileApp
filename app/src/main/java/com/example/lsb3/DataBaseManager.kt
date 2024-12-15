@@ -76,6 +76,47 @@ class DataBaseManager(context: Context): SQLiteOpenHelper(context,DATABASE_NAME,
         return id
     }
 
+    fun getAllCards(): ArrayList<Card> {
+        val cards = ArrayList<Card>()
+        val db = this.writableDatabase
+
+        val queryAllCards = ("SELECT "+
+                    "Cards.id AS id, "+
+                    "Cards.barcode, "+
+                    "Cards.isDisc, "+
+                    "Cards.disc, "+
+                    "Stores.name AS name "+
+                    "FROM Cards " +
+                    "INNER JOIN Stores "+
+                    "ON Cards.id_store = Stores.id")
+
+        val cursor = db.rawQuery(queryAllCards, null)
+
+
+        while (cursor.moveToNext()) {
+            val card = Card(
+                cursor.getString(cursor.getColumnIndexOrThrow("name")),
+                cursor.getString(cursor.getColumnIndexOrThrow("barcode")),
+                cursor.getInt(cursor.getColumnIndexOrThrow("isDisc")) == 1,
+                cursor.getInt(cursor.getColumnIndexOrThrow("disc")).toString()
+            )
+            card.id = cursor.getInt(cursor.getColumnIndexOrThrow("id"))
+            cards.add(card)
+        }
+        return cards
+    }
+
+    fun deleteCard(id: Int){
+        val db = this.writableDatabase
+
+        println(id)
+
+        val queryDeleteCard = "DELETE FROM Cards WHERE id = ?"
+        db.execSQL(queryDeleteCard, arrayOf(id))
+
+
+    }
+
 
 
 }
