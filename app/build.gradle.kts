@@ -9,8 +9,8 @@ android {
 
     defaultConfig {
         applicationId = "com.example.lsb3"
-        minSdk = 24
-        targetSdk = 34
+        minSdk = 26
+        targetSdk = 33
         versionCode = 1
         versionName = "1.0"
 
@@ -41,6 +41,7 @@ dependencies {
     implementation ("com.google.zxing:core:3.4.1")
     implementation ("com.google.zxing:javase:3.4.1")
     implementation ("androidx.recyclerview:recyclerview:1.2.1")
+    implementation ("androidx.sqlite:sqlite:2.4.0")
     implementation ("com.itextpdf:itext7-core:7.1.15")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.2.1")

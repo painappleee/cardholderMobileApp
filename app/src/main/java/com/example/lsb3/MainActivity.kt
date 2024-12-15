@@ -63,12 +63,13 @@ class MainActivity : AppCompatActivity() {
             if (result.resultCode == Activity.RESULT_OK) {
                 val data: Intent? = result.data
                 val card = Card(
-                    data?.getStringExtra("name"),
-                    data?.getStringExtra("shtr"),
-                    data?.getBooleanExtra("isDisc",false),
-                    data?.getStringExtra("disc")
+                    data?.getStringExtra("name").toString(),
+                    data?.getStringExtra("shtr").toString(),
+                    data?.getBooleanExtra("isDisc",false)!!,
+                    data.getStringExtra("disc")
                 )
                 card.shtrImg = createBarCode(card.shtr)
+                println(MyApplication.dbManager.getCardId(card))
                 cards.add(card)
                 appSpecificStorageManager.write(card)
                 adapter.notifyItemInserted(cards.size - 1)
@@ -80,10 +81,10 @@ class MainActivity : AppCompatActivity() {
             if (result.resultCode == Activity.RESULT_OK) {
                 val data: Intent? = result.data
                 val card = Card(
-                    data?.getStringExtra("name"),
-                    data?.getStringExtra("shtr"),
-                    data?.getBooleanExtra("isDisc",false),
-                    data?.getStringExtra("disc")
+                    data?.getStringExtra("name").toString(),
+                    data?.getStringExtra("shtr").toString(),
+                    data?.getBooleanExtra("isDisc",false)!!,
+                    data.getStringExtra("disc")
                 )
                 card.shtrImg = createBarCode(card.shtr)
                 cards[position] = card
@@ -111,7 +112,7 @@ class MainActivity : AppCompatActivity() {
             intent.putExtra("name", cards[position].name)
             intent.putExtra("shtr", cards[position].shtr)
             intent.putExtra("isDisc", cards[position].isDisc)
-            if ( cards[item.groupId].isDisc!=false)
+            if (cards[item.groupId].isDisc)
                 intent.putExtra("disc", cards[position].disc)
 
             resultEditLauncher.launch(intent)
