@@ -87,7 +87,9 @@ class MainActivity : AppCompatActivity() {
                     data.getStringExtra("disc")
                 )
                 card.shtrImg = createBarCode(card.shtr)
+                card.id = cards[position].id
                 cards[position] = card
+                MyApplication.dbManager.editCard(cards[position].id, card)
                 appSpecificStorageManager.edit(position, card)
                 adapter.notifyItemChanged(position)
                 position = -1
@@ -114,6 +116,7 @@ class MainActivity : AppCompatActivity() {
             intent.putExtra("isDisc", cards[position].isDisc)
             if (cards[item.groupId].isDisc)
                 intent.putExtra("disc", cards[position].disc)
+
 
             resultEditLauncher.launch(intent)
         }
@@ -182,7 +185,6 @@ class MainActivity : AppCompatActivity() {
 
         override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
             val position = viewHolder.bindingAdapterPosition
-            println(cards[position].id)
             MyApplication.dbManager.deleteCard(cards[position].id)
             adapter.removeItem(position)
             appSpecificStorageManager.delete(position)

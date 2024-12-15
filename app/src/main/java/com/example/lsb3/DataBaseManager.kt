@@ -10,8 +10,8 @@ import androidx.core.database.getLongOrNull
 class DataBaseManager(context: Context): SQLiteOpenHelper(context,DATABASE_NAME, null, DATABASE_VERSION) {
 
     companion object {
-        private const val DATABASE_NAME = "CARDS.db"
-        private const val DATABASE_VERSION = 3
+        private const val DATABASE_NAME = "CARDS"
+        private const val DATABASE_VERSION = 1
     }
 
     override fun onCreate(db: SQLiteDatabase) {
@@ -30,11 +30,16 @@ class DataBaseManager(context: Context): SQLiteOpenHelper(context,DATABASE_NAME,
                 "barcode TEXT NOT NULL," +
                 "isDisc BOOLEAN NOT NULL," +
                 "disc INTEGER," +
-                "FOREIGN KEY (id_store) REFERENCES Stores(id)"+
+                "FOREIGN KEY (id_store) REFERENCES Stores(id) ON DELETE CASCADE"+
                 ")")
 
 
         db.execSQL(queryCreateCards)
+    }
+
+    override fun onOpen(db: SQLiteDatabase) {
+        super.onOpen(db)
+        db.execSQL("PRAGMA foreign_keys = ON;")
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
@@ -80,6 +85,8 @@ class DataBaseManager(context: Context): SQLiteOpenHelper(context,DATABASE_NAME,
         val cards = ArrayList<Card>()
         val db = this.writableDatabase
 
+        deleteStore(4)
+
         val queryAllCards = ("SELECT "+
                     "Cards.id AS id, "+
                     "Cards.barcode, "+
@@ -109,13 +116,35 @@ class DataBaseManager(context: Context): SQLiteOpenHelper(context,DATABASE_NAME,
     fun deleteCard(id: Int){
         val db = this.writableDatabase
 
-        println(id)
-
         val queryDeleteCard = "DELETE FROM Cards WHERE id = ?"
         db.execSQL(queryDeleteCard, arrayOf(id))
 
 
     }
+
+    fun editCard(id:Int, card: Card){
+        val db = this.writableDatabase
+
+        val queryUpdateCard = ("UPDATE Cards "+
+        "SET id_store = ?, barcode = ?, isDisc = ?, disc = ? "+
+        "WHERE id = ?")
+
+        val disc = if (card.isDisc)
+            card.disc!!.toInt()
+        else
+            null
+
+        db.execSQL(queryUpdateCard, arrayOf(getStoreId(card.name), card.shtr, card.isDisc, disc, id))
+
+    }
+
+    private fun deleteStore(id: Int){
+        val db = this.writableDatabase
+
+        val queryDeleteCard = "DELETE FROM Stores WHERE id = ?"
+        db.execSQL(queryDeleteCard, arrayOf(id))
+    }
+
 
 
 
