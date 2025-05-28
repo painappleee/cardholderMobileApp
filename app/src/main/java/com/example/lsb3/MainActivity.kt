@@ -14,16 +14,24 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
+import com.example.lsb3.databinding.ActivityMainBinding
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.EncodeHintType
 import com.google.zxing.WriterException
 import com.google.zxing.common.BitMatrix
 import com.google.zxing.oned.Code128Writer
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.*
 
 
 class MainActivity : AppCompatActivity() {
+
+    private lateinit var binding: ActivityMainBinding
 
     private lateinit var resultLauncher: ActivityResultLauncher<Intent>
     private lateinit var resultEditLauncher: ActivityResultLauncher<Intent>
@@ -38,25 +46,38 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        //cards = appSpecificStorageManager.read()
-        cards = MyApplication.dbManager.getAllCards()
-
-        for (card in cards){
-            card.shtrImg = createBarCode(card.shtr)
-        }
-
-        val recView = findViewById<RecyclerView>(R.id.recView)
         val adapter = CardAdapter(this, cards)
-        val buttonAdd = findViewById<Button>(R.id.buttonAdd)
+        //cards = appSpecificStorageManager.read()
 
-        recView.adapter = adapter
-        recView.layoutManager = GridLayoutManager(this,2)
+
+        binding.recView.adapter = adapter
+        binding.recView.layoutManager = GridLayoutManager(this,2)
+
+        // Привет, это я - твой код, не забывай меня коммитить!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        // Тебе же хуже будет!
+
+        CoroutineScope(Dispatchers.IO).launch {
+            cards.clear()
+            cards.addAll(MyApplication.dbManager.getAllCards().await())
+
+            for (card in cards){
+//                println(card.shtrBitmap == null)
+//                if(card.shtrImg == null)
+                    card.shtrBitmap = createBarCode(card.shtr)!!
+            }
+
+            withContext(Dispatchers.Main) {
+                adapter.notifyDataSetChanged()
+            }
+
+        }
 
 
         val itemTouchHelper = ItemTouchHelper(SwipeToDeleteCallback(adapter))
-        itemTouchHelper.attachToRecyclerView(recView)
+        itemTouchHelper.attachToRecyclerView(binding.recView)
 
 
         resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -68,12 +89,15 @@ class MainActivity : AppCompatActivity() {
                     data?.getBooleanExtra("isDisc",false)!!,
                     data.getStringExtra("disc")
                 )
-                card.shtrImg = createBarCode(card.shtr)
-                card.id = MyApplication.dbManager.getCardId(card)
-                cards.add(card)
-                appSpecificStorageManager.write(card)
-                adapter.notifyItemInserted(cards.size - 1)
 
+                CoroutineScope(Dispatchers.IO).async {
+                    card.shtrBitmap = createBarCode(card.shtr)!!
+                    card.id = MyApplication.dbManager.getCardId(card).await()
+
+                    cards.add(card)
+                    appSpecificStorageManager.write(card)
+                    adapter.notifyItemInserted(cards.size - 1)
+                }
             }
         }
 
@@ -86,7 +110,7 @@ class MainActivity : AppCompatActivity() {
                     data?.getBooleanExtra("isDisc",false)!!,
                     data.getStringExtra("disc")
                 )
-                card.shtrImg = createBarCode(card.shtr)
+                card.shtrBitmap = createBarCode(card.shtr)!!
                 card.id = cards[position].id
                 cards[position] = card
                 MyApplication.dbManager.editCard(cards[position].id, card)
@@ -97,7 +121,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        buttonAdd.setOnClickListener{
+        binding.buttonAdd.setOnClickListener{
             intent = Intent(this, AddEditCardActivity::class.java)
             resultLauncher.launch(intent)
         }
@@ -121,7 +145,7 @@ class MainActivity : AppCompatActivity() {
             resultEditLauncher.launch(intent)
         }
         else if (item.itemId == 122){
-            cards[item.groupId].shtrImg?.let { sharedStorageManager.saveBarcode(it) }
+            cards[item.groupId].shtrBitmap?.let { sharedStorageManager.saveBarcode(it) }
         }
 
         return super.onContextItemSelected(item)

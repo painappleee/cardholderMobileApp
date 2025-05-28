@@ -4,7 +4,8 @@
               xmlns:app="http://schemas.android.com/apk/res-auto"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
-              tools:context=".AddEditCardActivity" android:orientation="vertical" android:gravity="center_horizontal">
+              tools:context=".AddEditCardActivity" android:orientation="vertical" android:gravity="center_horizontal"
+              android:background="#FDF6FE">
     <TextView
             android:layout_height="50dp"
             android:text="Добавить карту"
@@ -77,11 +78,15 @@
                         android:gravity="center_horizontal|center_vertical" android:textSize="16sp"/>
             </LinearLayout>
         </LinearLayout>
+        <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
     </LinearLayout>
     <Button
             android:text="Добавить"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" android:id="@+id/btnAdd" app:cornerRadius="15dp"
+            android:layout_height="wrap_content" android:id="@+id/btnBack" app:cornerRadius="15dp"
             android:gravity="center|center_horizontal|center_vertical"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="20dp"

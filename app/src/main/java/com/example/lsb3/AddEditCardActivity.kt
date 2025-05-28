@@ -6,55 +6,51 @@ import android.os.Bundle
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
+import com.example.lsb3.databinding.AddEditCardActivityBinding
 
 class AddEditCardActivity: AppCompatActivity() {
+
+    private lateinit var binding: AddEditCardActivityBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.add_edit_card_activity)
-
-        val chk = findViewById<CheckBox>(R.id.checkBox)
-        val ltDisc = findViewById<LinearLayout>(R.id.ltDisc)
-        val btnAdd = findViewById<Button>(R.id.btnAdd)
-        val etName = findViewById<EditText>(R.id.etName) 
-        val etShtr = findViewById<EditText>(R.id.etShtr)
-        val etDisc = findViewById<EditText>(R.id.etDisc)
-        val header = findViewById<TextView>(R.id.header)
-
+        binding = AddEditCardActivityBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         val intent = intent
 
         if (intent.hasExtra("name")) {
-            header.text = "Редактировать карту"
-            btnAdd.text = "Сохранить"
-            etName.setText(intent.getStringExtra("name"))
-            etShtr.setText(intent.getStringExtra("shtr"))
-            chk.isChecked = !intent.getBooleanExtra("isDisc", true)
-            ltDisc.isVisible = !chk.isChecked
-            if (!chk.isChecked)
-                etDisc.setText(intent.getStringExtra("disc"))
+            binding.header.text = "Редактировать карту"
+            binding.btnBack.text = "Сохранить"
+            binding.etName.setText(intent.getStringExtra("name"))
+            binding.etShtr.setText(intent.getStringExtra("shtr"))
+            binding.checkBox.isChecked = !intent.getBooleanExtra("isDisc", true)
+            binding.ltDisc.isVisible = !binding.checkBox.isChecked
+            if (!binding.checkBox.isChecked)
+                binding.etDisc.setText(intent.getStringExtra("disc"))
         }
 
-        chk.setOnCheckedChangeListener{ checkBox, isChecked ->
-            ltDisc.isVisible = !isChecked
+        binding.checkBox.setOnCheckedChangeListener{ checkBox, isChecked ->
+            binding.ltDisc.isVisible = !isChecked
         }
 
-        btnAdd.setOnClickListener{
+        binding.btnBack.setOnClickListener{
             var disc: String? = null
-            if (etDisc.text.isNotEmpty())
-                disc = etDisc.text.toString()
+            if (binding.etDisc.text.isNotEmpty())
+                disc = binding.etDisc.text.toString()
 
-            var isDiscCorrect: Boolean = (chk.isChecked) || (!chk.isChecked && disc!=null && etDisc.text.toString().toInt()<100 )
+            var isDiscCorrect: Boolean = (binding.checkBox.isChecked) || (!binding.checkBox.isChecked && disc!=null && binding.etDisc.text.toString().toInt()<100 )
 
-            if (etName.text.isNotEmpty() && etShtr.text.isNotEmpty() && isDiscCorrect) {
+            if (binding.etName.text.isNotEmpty() && binding.etShtr.text.isNotEmpty() && isDiscCorrect) {
                 val returnIntent = Intent()
-                returnIntent.putExtra("name", etName.text.toString())
-                returnIntent.putExtra("shtr", etShtr.text.toString())
-                returnIntent.putExtra("isDisc", !chk.isChecked)
+                returnIntent.putExtra("name", binding.etName.text.toString())
+                returnIntent.putExtra("shtr", binding.etShtr.text.toString())
+                returnIntent.putExtra("isDisc", !binding.checkBox.isChecked)
                 returnIntent.putExtra("disc", disc)
                 setResult(Activity.RESULT_OK, returnIntent)
                 finish()
             }
-            else if(disc!=null && etDisc.text.toString().toInt()>=100){
+            else if(disc!=null && binding.etDisc.text.toString().toInt()>=100){
                 Toast.makeText(this, "Размер скидки не может быть больше 100%!", Toast.LENGTH_SHORT).show()
             }
             else{
