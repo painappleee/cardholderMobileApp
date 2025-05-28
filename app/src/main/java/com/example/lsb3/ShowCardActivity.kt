@@ -22,15 +22,7 @@ class ShowCardActivity : AppCompatActivity() {
         val intent = intent
         val card = intent.getSerializableExtra("card", Card::class.java)!!
 
-        binding.header.text = card.name
-        val isDisc = card.isDisc
-        binding.tvType.text =  if (isDisc) "Дисконтная" else "Накопительная"
-        binding.ltDisc.isVisible = isDisc
-        if (isDisc){
-            binding.tvPr.text = card.disc+ "%"
-        }
-        binding.tvShtr.text = card.shtr
-
+        binding.card = card
         binding.shtrImage.setImageBitmap(BitmapConverter.scaledBitmap(card.shtrBitmap!!,3f))
 
         binding.btnBack.setOnClickListener {

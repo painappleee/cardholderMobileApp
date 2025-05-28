@@ -11,23 +11,30 @@ import com.example.lsb3.databinding.AddEditCardActivityBinding
 class AddEditCardActivity: AppCompatActivity() {
 
     private lateinit var binding: AddEditCardActivityBinding
+    private lateinit var card: Card
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = AddEditCardActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+
         val intent = intent
 
         if (intent.hasExtra("name")) {
-            binding.header.text = "Редактировать карту"
-            binding.btnBack.text = "Сохранить"
-            binding.etName.setText(intent.getStringExtra("name"))
-            binding.etShtr.setText(intent.getStringExtra("shtr"))
-            binding.checkBox.isChecked = !intent.getBooleanExtra("isDisc", true)
-            binding.ltDisc.isVisible = !binding.checkBox.isChecked
-            if (!binding.checkBox.isChecked)
-                binding.etDisc.setText(intent.getStringExtra("disc"))
+            binding.edit = true
+
+            card =Card(intent.getStringExtra("name")!!,
+                intent.getStringExtra("shtr")!!,
+                !intent.getBooleanExtra("isDisc", true),
+                intent.getStringExtra("disc"))
+
+
+            binding.card = card
+
+        }
+        else{
+            binding.edit = false
         }
 
         binding.checkBox.setOnCheckedChangeListener{ checkBox, isChecked ->

@@ -1,42 +1,84 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout android:layout_width="wrap_content" android:background="#EBD2FF"
-              android:layout_height="130dp" android:orientation="vertical"
-              xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_margin="5dp" android:id="@+id/itemlt">
-    <TextView
-            android:text="магазин"
-            android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:id="@+id/tVNameAns"
-            android:textColor="#000000" android:gravity="center_horizontal|center_vertical" android:textSize="20sp"/>
-    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
-                  android:orientation="horizontal">
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+        <import type="android.view.View"/>
+        <variable
+                name="card"
+                type="com.example.lsb3.Card" />
+    </data>
+
+    <LinearLayout
+            android:id="@+id/itemlt"
+            android:layout_width="wrap_content"
+            android:layout_height="130dp"
+            android:layout_margin="5dp"
+            android:background="#EBD2FF"
+            android:orientation="vertical">
+
         <TextView
-                android:text="Скидочная"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent" android:id="@+id/tvisDiscAns"
-                android:textColor="#000000" android:gravity="center_vertical"
-                android:paddingLeft="15dp"/>
-        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
-                      android:gravity="right|center_vertical" android:id="@+id/ltDisc2"
-                      android:orientation="horizontal"
-                        android:paddingRight="15dp">
-            <TextView
-                    android:text="10"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" android:id="@+id/tvDiscAns" android:layout_marginRight="5dp"
-                    android:textColor="#000000"/>
-            <TextView
-                    android:text="%"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" android:id="@+id/tvPr2" android:layout_weight="0"
-                    />
-        </LinearLayout>
-    </LinearLayout>
-    <ImageView android:paddingRight="15dp" android:paddingLeft="15dp" android:layout_width="wrap_content" android:layout_height="wrap_content" android:gravity="center_vertical" android:id="@+id/iVShtr">
-    </ImageView>
-    <TextView
-                android:text="5367748923056"
+                android:id="@+id/tVNameAns"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" android:id="@+id/tvShtrAns"
-                android:textColor="#000000" android:gravity="center_horizontal" />
-</LinearLayout>
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal|center_vertical"
+                android:text="@{card.name}"
+                android:textColor="#000000"
+                android:textSize="20sp" />
+
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+            <TextView
+                    android:id="@+id/tvisDiscAns"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="15dp"
+                    android:textColor="#000000"
+                    android:text='@{card.isDisc ? "Дисконтая" : "Накопительная"}' />
+
+            <LinearLayout
+                    android:id="@+id/ltDisc2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="right|center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingRight="15dp"
+                    android:visibility='@{card.isDisc ? View.VISIBLE : View.GONE}'>
+
+                <TextView
+                        android:id="@+id/tvDiscAns"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="5dp"
+                        android:text="@{card.disc}"
+                        android:textColor="#000000" />
+
+                <TextView
+                        android:id="@+id/tvPr2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0"
+                        android:text="%" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <ImageView
+                android:id="@+id/iVShtr"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
+                android:gravity="center_vertical"></ImageView>
+
+        <TextView
+                android:id="@+id/tvShtrAns"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:text="@{card.shtr}"
+                android:textColor="#000000" />
+    </LinearLayout>
+</layout>

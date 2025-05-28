@@ -60,19 +60,20 @@ class MainActivity : AppCompatActivity() {
         // Тебе же хуже будет!
 
         CoroutineScope(Dispatchers.IO).launch {
-            cards.clear()
-            cards.addAll(MyApplication.dbManager.getAllCards().await())
+            val fetchedCards = MyApplication.dbManager.getAllCards().await()
 
-            for (card in cards){
-//                println(card.shtrBitmap == null)
-//                if(card.shtrImg == null)
-                    card.shtrBitmap = createBarCode(card.shtr)!!
+            for (card in fetchedCards) {
+                if (card.shtrBitmap == null) {
+                    card.shtrBitmap = createBarCode(card.shtr)
+                }
             }
 
             withContext(Dispatchers.Main) {
+                cards.clear()
+                cards.addAll(fetchedCards)
+
                 adapter.notifyDataSetChanged()
             }
-
         }
 
 
