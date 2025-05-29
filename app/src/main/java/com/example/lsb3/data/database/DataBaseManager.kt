@@ -1,4 +1,4 @@
-package com.example.lsb3
+package com.example.lsb3.data.database
 
 import android.content.ContentValues
 import android.content.Context
@@ -8,9 +8,10 @@ import android.database.sqlite.SQLiteOpenHelper
 import androidx.core.database.getLongOrNull
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.example.lsb3.data.model.Card
 import kotlinx.coroutines.*
 
-class DataBaseManager(context: Context): SQLiteOpenHelper(context,DATABASE_NAME, null, DATABASE_VERSION) {
+class DataBaseManager(context: Context): SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
 
     private val _cards = MutableLiveData<ArrayList<Card>>().apply {
         value = ArrayList()
@@ -98,7 +99,8 @@ class DataBaseManager(context: Context): SQLiteOpenHelper(context,DATABASE_NAME,
         }
     }
 
-    private fun refreshCards() {
+
+    fun refreshCards() {
         CoroutineScope(Dispatchers.IO).launch {
             val cardList = getAllCards().await()
             withContext(Dispatchers.Main) {

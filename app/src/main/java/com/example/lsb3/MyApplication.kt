@@ -2,6 +2,7 @@ package com.example.lsb3
 
 import android.app.Application
 import android.content.Context
+import com.example.lsb3.data.database.DataBaseManager
 
 class MyApplication : Application() {
     companion object {

@@ -6,7 +6,7 @@
     <data>
         <variable
                 name="card"
-                type="com.example.lsb3.Card" />
+                type="com.example.lsb3.data.model.Card" />
         <variable
                 name="edit"
                 type="Boolean" />
@@ -16,7 +16,7 @@
     <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            tools:context=".AddEditCardActivity"
+            tools:context=".ui.view.AddEditCardActivity"
             android:orientation="vertical"
             android:gravity="center_horizontal"
             android:background="#FDF6FE">

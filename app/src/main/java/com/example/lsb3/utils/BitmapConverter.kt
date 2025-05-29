@@ -1,4 +1,4 @@
-package com.example.lsb3
+package com.example.lsb3.utils
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory

@@ -1,4 +1,4 @@
-package com.example.lsb3
+package com.example.lsb3.ui.view
 
 import android.app.Activity
 import android.content.Intent
@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
+import com.example.lsb3.data.model.Card
 import com.example.lsb3.databinding.AddEditCardActivityBinding
 
 class AddEditCardActivity: AppCompatActivity() {
@@ -24,7 +25,7 @@ class AddEditCardActivity: AppCompatActivity() {
         if (intent.hasExtra("name")) {
             binding.edit = true
 
-            card =Card(intent.getStringExtra("name")!!,
+            card = Card(intent.getStringExtra("name")!!,
                 intent.getStringExtra("shtr")!!,
                 !intent.getBooleanExtra("isDisc", true),
                 intent.getStringExtra("disc"))

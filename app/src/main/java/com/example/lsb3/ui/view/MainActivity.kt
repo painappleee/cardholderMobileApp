@@ -1,4 +1,4 @@
-package com.example.lsb3
+package com.example.lsb3.ui.view
 
 import android.app.Activity
 import android.content.Intent
@@ -7,13 +7,18 @@ import android.graphics.Color
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.Button
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
+import com.example.lsb3.ui.adapter.CardAdapter
+import com.example.lsb3.MyApplication
+import com.example.lsb3.R
+import com.example.lsb3.data.model.Card
+import com.example.lsb3.data.storages.AppSpecificStorageManager
+import com.example.lsb3.data.storages.SharedStorageManager
 import com.example.lsb3.databinding.ActivityMainBinding
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.EncodeHintType
@@ -35,7 +40,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var resultLauncher: ActivityResultLauncher<Intent>
     private lateinit var resultEditLauncher: ActivityResultLauncher<Intent>
-    private val appSpecificStorageManager: AppSpecificStorageManager = AppSpecificStorageManager(this)
+    //private val appSpecificStorageManager: AppSpecificStorageManager = AppSpecificStorageManager(this)
 
     private val sharedStorageManager: SharedStorageManager = SharedStorageManager(this)
 
@@ -71,8 +76,11 @@ class MainActivity : AppCompatActivity() {
                     cards.addAll(updatedCards)
                     adapter.notifyDataSetChanged()
                 }
+
+                MyApplication.dbManager.refreshCards()
             }
         }
+
 
 
         val itemTouchHelper = ItemTouchHelper(SwipeToDeleteCallback(adapter))
