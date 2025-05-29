@@ -41,7 +41,7 @@ class MainActivity : AppCompatActivity() {
 
     private var position = -1
     private var cards = ArrayList<Card>()
-
+    private lateinit var adapter: CardAdapter
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,7 +49,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val adapter = CardAdapter(this, cards)
+        adapter = CardAdapter(this, cards)
         //cards = appSpecificStorageManager.read()
 
 
@@ -59,20 +59,18 @@ class MainActivity : AppCompatActivity() {
         // Привет, это я - твой код, не забывай меня коммитить!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         // Тебе же хуже будет!
 
-        CoroutineScope(Dispatchers.IO).launch {
-            val fetchedCards = MyApplication.dbManager.getAllCards().await()
-
-            for (card in fetchedCards) {
-                if (card.shtrBitmap == null) {
-                    card.shtrBitmap = createBarCode(card.shtr)
+        MyApplication.dbManager.cards.observe(this) { updatedCards ->
+            CoroutineScope(Dispatchers.Default).launch {
+                updatedCards.forEach { card ->
+                    if (card.shtrBitmap == null) {
+                        card.shtrBitmap = createBarCode(card.shtr)
+                    }
                 }
-            }
-
-            withContext(Dispatchers.Main) {
-                cards.clear()
-                cards.addAll(fetchedCards)
-
-                adapter.notifyDataSetChanged()
+                withContext(Dispatchers.Main) {
+                    cards.clear()
+                    cards.addAll(updatedCards)
+                    adapter.notifyDataSetChanged()
+                }
             }
         }
 
@@ -96,8 +94,8 @@ class MainActivity : AppCompatActivity() {
                     card.id = MyApplication.dbManager.getCardId(card).await()
 
                     cards.add(card)
-                    appSpecificStorageManager.write(card)
-                    adapter.notifyItemInserted(cards.size - 1)
+                    //appSpecificStorageManager.write(card)
+                    //adapter.notifyItemInserted(cards.size - 1)
                 }
             }
         }
@@ -115,8 +113,8 @@ class MainActivity : AppCompatActivity() {
                 card.id = cards[position].id
                 cards[position] = card
                 MyApplication.dbManager.editCard(cards[position].id, card)
-                appSpecificStorageManager.edit(position, card)
-                adapter.notifyItemChanged(position)
+                //appSpecificStorageManager.edit(position, card)
+                // adapter.notifyItemChanged(position)
                 position = -1
 
             }
@@ -211,8 +209,8 @@ class MainActivity : AppCompatActivity() {
         override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
             val position = viewHolder.bindingAdapterPosition
             MyApplication.dbManager.deleteCard(cards[position].id)
-            adapter.removeItem(position)
-            appSpecificStorageManager.delete(position)
+            //adapter.removeItem(position)
+            //appSpecificStorageManager.delete(position)
 
         }
 

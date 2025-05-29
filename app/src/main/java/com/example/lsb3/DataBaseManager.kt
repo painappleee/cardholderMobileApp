@@ -6,9 +6,16 @@ import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import androidx.core.database.getLongOrNull
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.*
 
 class DataBaseManager(context: Context): SQLiteOpenHelper(context,DATABASE_NAME, null, DATABASE_VERSION) {
+
+    private val _cards = MutableLiveData<ArrayList<Card>>().apply {
+        value = ArrayList()
+    }
+    val cards: LiveData<ArrayList<Card>> = _cards
 
     companion object {
         private const val DATABASE_NAME = "CARDS"
@@ -64,6 +71,7 @@ class DataBaseManager(context: Context): SQLiteOpenHelper(context,DATABASE_NAME,
                 db.insert("Stores", null, values).toInt()
             }
 
+
             cursor.close()
             return@async id
         }
@@ -84,13 +92,24 @@ class DataBaseManager(context: Context): SQLiteOpenHelper(context,DATABASE_NAME,
 
             id = db.insert("Cards", null, values).toInt()
 
+            refreshCards()
+
             return@async id
+        }
+    }
+
+    private fun refreshCards() {
+        CoroutineScope(Dispatchers.IO).launch {
+            val cardList = getAllCards().await()
+            withContext(Dispatchers.Main) {
+                _cards.value = cardList
+            }
         }
     }
 
     fun getAllCards(): Deferred<ArrayList<Card>> {
         return CoroutineScope(Dispatchers.IO).async {
-            val cards = ArrayList<Card>()
+            val cardsList = ArrayList<Card>()
             val db = this@DataBaseManager.readableDatabase
 
             val queryAllCards = ("SELECT " +
@@ -113,11 +132,12 @@ class DataBaseManager(context: Context): SQLiteOpenHelper(context,DATABASE_NAME,
                     cursor.getInt(cursor.getColumnIndexOrThrow("disc")).toString()
                 )
                 card.id = cursor.getInt(cursor.getColumnIndexOrThrow("id"))
-                cards.add(card)
+                cardsList.add(card)
             }
 
             cursor.close()
-            return@async cards
+
+            return@async cardsList
         }
     }
 
@@ -127,7 +147,10 @@ class DataBaseManager(context: Context): SQLiteOpenHelper(context,DATABASE_NAME,
 
             val queryDeleteCard = "DELETE FROM Cards WHERE id = ?"
             db.execSQL(queryDeleteCard, arrayOf(id))
+
+            refreshCards()
         }
+
     }
 
     fun editCard(id:Int, card: Card){
@@ -144,6 +167,8 @@ class DataBaseManager(context: Context): SQLiteOpenHelper(context,DATABASE_NAME,
                 null
 
             db.execSQL(queryUpdateCard, arrayOf(getStoreId(card.name).await(), card.shtr, card.isDisc, disc, id))
+
+            refreshCards()
         }
     }
 
