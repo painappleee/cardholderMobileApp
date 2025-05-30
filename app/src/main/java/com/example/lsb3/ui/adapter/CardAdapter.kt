@@ -11,7 +11,7 @@ import com.example.lsb3.databinding.CardItemBinding
 import kotlin.collections.ArrayList
 
 
-class CardAdapter(var context: Context, var cards: ArrayList<Card>): RecyclerView.Adapter<CardAdapter.CardViewHolder>() {
+class CardAdapter(var context: Context, var cards: ArrayList<Card>, var action: (Int) -> Unit): RecyclerView.Adapter<CardAdapter.CardViewHolder>() {
 
 
     fun removeItem(position: Int) {
@@ -26,17 +26,10 @@ class CardAdapter(var context: Context, var cards: ArrayList<Card>): RecyclerVie
 
 
     override fun onBindViewHolder(holder: CardViewHolder, position: Int) {
-
         holder.bind(cards[position])
-
         holder.itemView.setOnClickListener {
-            val intent = Intent(context, ShowCardActivity::class.java).apply {
-                putExtra("card", cards[position].copy())
-            }
-            context.startActivity(intent)
+            action(position)
         }
-
-
     }
 
 

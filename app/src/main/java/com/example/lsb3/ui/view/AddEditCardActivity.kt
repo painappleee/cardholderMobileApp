@@ -5,19 +5,19 @@ import android.util.Log
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
+import androidx.lifecycle.ViewModelProvider
 import com.example.lsb3.MyApplication
 import com.example.lsb3.data.model.Card
 import com.example.lsb3.databinding.AddEditCardActivityBinding
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.withContext
+import com.example.lsb3.ui.viewmodel.AddEditCardViewModel
+import com.example.lsb3.ui.viewmodel.MainViewModel
+import kotlinx.coroutines.*
 
 class AddEditCardActivity: AppCompatActivity() {
 
     private lateinit var binding: AddEditCardActivityBinding
-    private lateinit var card: Card
-
+    private lateinit var viewModel: AddEditCardViewModel
+    private var cardId: Int = -1
     private var isEdit: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -25,29 +25,24 @@ class AddEditCardActivity: AppCompatActivity() {
         binding = AddEditCardActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-
-        val intent = intent
+        viewModel = ViewModelProvider(this).get(AddEditCardViewModel::class.java)
 
         if (intent.hasExtra("cardId")) {
-            binding.edit = true
             isEdit = true
+            binding.edit = true
 
+            cardId = intent.getIntExtra("cardId",-1)
 
-            CoroutineScope(Dispatchers.IO).async {
-                card = MyApplication.dbManager.getCardById(intent.getIntExtra("cardId", -1)).await()!!
-
-                withContext(Dispatchers.Main){
-                    Log.d("isDisc",card.isDisc.toString())
+            CoroutineScope(Dispatchers.IO).launch{
+                val card = viewModel.getCard(cardId)
+                runOnUiThread {
                     binding.card = card
-
                 }
             }
-
 
         }
         else{
             binding.edit = false
-            isEdit = false
         }
 
         binding.checkBox.setOnCheckedChangeListener{ checkBox, isChecked ->
@@ -55,43 +50,35 @@ class AddEditCardActivity: AppCompatActivity() {
         }
 
         binding.btnBack.setOnClickListener{
-            var disc: String? = null
-            if (binding.etDisc.text.isNotEmpty())
-                disc = binding.etDisc.text.toString()
+            val name = binding.etName.text.toString()
+            val shtr = binding.etShtr.text.toString()
+            val disc = binding.etDisc.text.toString()
+            val isDisc = !binding.checkBox.isChecked
 
-            var isDiscCorrect: Boolean = (binding.checkBox.isChecked) || (!binding.checkBox.isChecked && disc!=null && binding.etDisc.text.toString().toInt()<100 )
+            if (name.isEmpty() || shtr.isEmpty() || (isDisc && (disc.isEmpty() || disc.toIntOrNull() == null || disc.toInt() >= 100))) {
+                Toast.makeText(this, "Заполните все поля корректно", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
 
-            if (binding.etName.text.isNotEmpty() && binding.etShtr.text.isNotEmpty() && isDiscCorrect) {
+            val updatedCard = Card(name, shtr, isDisc, if (isDisc) disc else null)
 
-                val name = binding.etName.text.toString()
-                val shtr = binding.etShtr.text.toString()
-                val isDisc = !binding.checkBox.isChecked
-                val disc = binding.etDisc.text.toString()
-
-                val updatedCard = Card(name, shtr, isDisc, disc)
-
-
+            CoroutineScope(Dispatchers.IO).launch{
                 if (isEdit){
-                    updatedCard.id = card.id
-                    MyApplication.dbManager.editCard(updatedCard)
+                    updatedCard.id = cardId
+                    viewModel.editCard(updatedCard)
                 }
                 else{
-                    MyApplication.dbManager.addCard(updatedCard)
+                    viewModel.addCard(updatedCard)
                 }
 
-                finish()
-            }
-            else if(disc!=null && binding.etDisc.text.toString().toInt()>=100){
-                Toast.makeText(this, "Размер скидки не может быть больше 100%!", Toast.LENGTH_SHORT).show()
-            }
-            else{
-                Toast.makeText(this, "Заполните все поля!", Toast.LENGTH_SHORT).show()
+                withContext(Dispatchers.Main){
+                    finish()
+                }
             }
         }
     }
-
-
 }
+
 /*маленький клас
         поле мятик
         поле шаик

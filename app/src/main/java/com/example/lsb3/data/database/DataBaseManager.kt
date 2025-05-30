@@ -57,164 +57,143 @@ class DataBaseManager(context: Context): SQLiteOpenHelper(context, DATABASE_NAME
         onCreate(db)
     }
 
-    private fun getStoreId(name: String): Deferred<Int> {
-        return CoroutineScope(Dispatchers.IO).async {
-            var id = -1
-            val db = this@DataBaseManager.writableDatabase
-            val query = "SELECT id FROM Stores WHERE name = ?"
+    private suspend fun getStoreId(name: String): Int {
+        var id = -1
+        val db = this@DataBaseManager.writableDatabase
+        val query = "SELECT id FROM Stores WHERE name = ?"
 
-            val cursor: Cursor = db.rawQuery(query, arrayOf(name))
-            id = if (cursor.moveToFirst()) {
-                cursor.getLongOrNull(cursor.getColumnIndex("id"))?.toInt()!!
-            } else {
-                val values = ContentValues()
-                values.put("name", name)
-                db.insert("Stores", null, values).toInt()
-            }
-
-
-            cursor.close()
-            return@async id
+        val cursor: Cursor = db.rawQuery(query, arrayOf(name))
+        id = if (cursor.moveToFirst()) {
+            cursor.getLongOrNull(cursor.getColumnIndex("id"))?.toInt()!!
+        } else {
+            val values = ContentValues()
+            values.put("name", name)
+            db.insert("Stores", null, values).toInt()
         }
+
+
+        cursor.close()
+        return id
     }
 
-    fun getCardById(id: Int): Deferred<Card?> {
-        return CoroutineScope(Dispatchers.IO).async {
-            val db = this@DataBaseManager.readableDatabase
+    suspend fun getCardById(id: Int): Card? {
+        val db = this@DataBaseManager.readableDatabase
 
-            val query = ("SELECT " +
-                    "Cards.id AS id, " +
-                    "Cards.barcode, " +
-                    "Cards.isDisc, " +
-                    "Cards.disc, " +
-                    "Stores.name AS name " +
-                    "FROM Cards " +
-                    "INNER JOIN Stores ON Cards.id_store = Stores.id " +
-                    "WHERE Cards.id = ?")
+        val query = ("SELECT " +
+                "Cards.id AS id, " +
+                "Cards.barcode, " +
+                "Cards.isDisc, " +
+                "Cards.disc, " +
+                "Stores.name AS name " +
+                "FROM Cards " +
+                "INNER JOIN Stores ON Cards.id_store = Stores.id " +
+                "WHERE Cards.id = ?")
 
-            val cursor = db.rawQuery(query, arrayOf(id.toString()))
-            var card: Card? = null
+        val cursor = db.rawQuery(query, arrayOf(id.toString()))
+        var card: Card? = null
 
-            if (cursor.moveToFirst()) {
-                card = Card(
-                    cursor.getString(cursor.getColumnIndexOrThrow("name")),
-                    cursor.getString(cursor.getColumnIndexOrThrow("barcode")),
-                    cursor.getInt(cursor.getColumnIndexOrThrow("isDisc")) == 1,
-                    cursor.getInt(cursor.getColumnIndexOrThrow("disc")).toString()
-                )
-                card.id = cursor.getInt(cursor.getColumnIndexOrThrow("id"))
-            }
-
-            cursor.close()
-            return@async card
+        if (cursor.moveToFirst()) {
+            card = Card(
+                cursor.getString(cursor.getColumnIndexOrThrow("name")),
+                cursor.getString(cursor.getColumnIndexOrThrow("barcode")),
+                cursor.getInt(cursor.getColumnIndexOrThrow("isDisc")) == 1,
+                cursor.getInt(cursor.getColumnIndexOrThrow("disc")).toString()
+            )
+            card.id = cursor.getInt(cursor.getColumnIndexOrThrow("id"))
         }
+
+        cursor.close()
+        return card
     }
 
 
-    fun addCard(card: Card) {
-       CoroutineScope(Dispatchers.IO).launch {
-            val db = this@DataBaseManager.writableDatabase
+    suspend fun addCard(card: Card) {
+        val db = this@DataBaseManager.writableDatabase
 
-            val values = ContentValues().apply {
-                put("id_store", getStoreId(card.name).await())
-                put("barcode", card.shtr)
-                put("isDisc", card.isDisc)
-                if (card.isDisc)
-                    put("disc", card.disc!!.toInt())
-            }
-
-            db.insert("Cards", null, values)
-
-            refreshCards()
-
+        val values = ContentValues().apply {
+            put("id_store", getStoreId(card.name))
+            put("barcode", card.shtr)
+            put("isDisc", card.isDisc)
+            if (card.isDisc)
+                put("disc", card.disc!!.toInt())
         }
-    }
 
-    fun refreshCards() {
-        CoroutineScope(Dispatchers.IO).launch {
-            val cardList = getAllCards().await()
-            withContext(Dispatchers.Main) {
-                _cards.value = cardList
-            }
-        }
-    }
+        db.insert("Cards", null, values)
 
-    fun getAllCards(): Deferred<ArrayList<Card>> {
-        return CoroutineScope(Dispatchers.IO).async {
-            val cardsList = ArrayList<Card>()
-            val db = this@DataBaseManager.readableDatabase
-
-            val queryAllCards = ("SELECT " +
-                    "Cards.id AS id, " +
-                    "Cards.barcode, " +
-                    "Cards.isDisc, " +
-                    "Cards.disc, " +
-                    "Stores.name AS name " +
-                    "FROM Cards " +
-                    "INNER JOIN Stores " +
-                    "ON Cards.id_store = Stores.id")
-
-            val cursor = db.rawQuery(queryAllCards, null)
-
-            while (cursor.moveToNext()) {
-                val card = Card(
-                    cursor.getString(cursor.getColumnIndexOrThrow("name")),
-                    cursor.getString(cursor.getColumnIndexOrThrow("barcode")),
-                    cursor.getInt(cursor.getColumnIndexOrThrow("isDisc")) == 1,
-                    cursor.getInt(cursor.getColumnIndexOrThrow("disc")).toString()
-                )
-                card.id = cursor.getInt(cursor.getColumnIndexOrThrow("id"))
-                cardsList.add(card)
-            }
-
-            cursor.close()
-
-            return@async cardsList
-        }
-    }
-
-    fun deleteCard(id: Int){
-        CoroutineScope(Dispatchers.IO).launch {
-            val db = this@DataBaseManager.writableDatabase
-
-            val queryDeleteCard = "DELETE FROM Cards WHERE id = ?"
-            db.execSQL(queryDeleteCard, arrayOf(id))
-
-            refreshCards()
-        }
+        refreshCards()
 
     }
 
-    fun editCard(card: Card){
-        CoroutineScope(Dispatchers.IO).launch {
-            val db = this@DataBaseManager.writableDatabase
-
-            val queryUpdateCard = ("UPDATE Cards " +
-                    "SET id_store = ?, barcode = ?, isDisc = ?, disc = ? " +
-                    "WHERE id = ?")
-
-            val disc = if (card.isDisc)
-                card.disc!!.toInt()
-            else
-                null
-
-            db.execSQL(queryUpdateCard, arrayOf(getStoreId(card.name).await(), card.shtr, card.isDisc, disc, card.id))
-
-            refreshCards()
-        }
+    private suspend fun refreshCards() {
+        val cardList = getAllCards()
+        _cards.postValue(cardList)
     }
 
-    private fun deleteStore(id: Int){
-        CoroutineScope(Dispatchers.IO).launch {
-            val db = this@DataBaseManager.writableDatabase
+    suspend fun getAllCards(): ArrayList<Card> {
+        val cardsList = ArrayList<Card>()
+        val db = this@DataBaseManager.readableDatabase
 
-            val queryDeleteCard = "DELETE FROM Stores WHERE id = ?"
-            db.execSQL(queryDeleteCard, arrayOf(id))
+        val queryAllCards = ("SELECT " +
+                "Cards.id AS id, " +
+                "Cards.barcode, " +
+                "Cards.isDisc, " +
+                "Cards.disc, " +
+                "Stores.name AS name " +
+                "FROM Cards " +
+                "INNER JOIN Stores " +
+                "ON Cards.id_store = Stores.id")
+
+        val cursor = db.rawQuery(queryAllCards, null)
+
+        while (cursor.moveToNext()) {
+            val card = Card(
+                cursor.getString(cursor.getColumnIndexOrThrow("name")),
+                cursor.getString(cursor.getColumnIndexOrThrow("barcode")),
+                cursor.getInt(cursor.getColumnIndexOrThrow("isDisc")) == 1,
+                cursor.getInt(cursor.getColumnIndexOrThrow("disc")).toString()
+            )
+            card.id = cursor.getInt(cursor.getColumnIndexOrThrow("id"))
+            cardsList.add(card)
         }
+
+        cursor.close()
+
+        return cardsList
+    }
+
+    suspend fun deleteCard(id: Int){
+        val db = this@DataBaseManager.writableDatabase
+
+        val queryDeleteCard = "DELETE FROM Cards WHERE id = ?"
+        db.execSQL(queryDeleteCard, arrayOf(id))
+
+        refreshCards()
+
     }
 
 
+    suspend fun editCard(card: Card){
+        val db = this@DataBaseManager.writableDatabase
 
+        val queryUpdateCard = ("UPDATE Cards " +
+                "SET id_store = ?, barcode = ?, isDisc = ?, disc = ? " +
+                "WHERE id = ?")
+
+        val disc = if (card.isDisc)
+            card.disc!!.toInt()
+        else
+            null
+
+        db.execSQL(queryUpdateCard, arrayOf(getStoreId(card.name), card.shtr, card.isDisc, disc, card.id))
+
+        refreshCards()
+    }
+
+    private suspend fun deleteStore(id: Int){
+        val db = this@DataBaseManager.writableDatabase
+
+        val queryDeleteCard = "DELETE FROM Stores WHERE id = ?"
+        db.execSQL(queryDeleteCard, arrayOf(id))
+    }
 
 }
-

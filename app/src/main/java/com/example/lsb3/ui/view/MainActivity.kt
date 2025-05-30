@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
@@ -17,26 +18,20 @@ import com.example.lsb3.data.storages.AppSpecificStorageManager
 import com.example.lsb3.data.storages.SharedStorageManager
 import com.example.lsb3.databinding.ActivityMainBinding
 import com.example.lsb3.ui.adapter.CardAdapter
-import com.google.zxing.BarcodeFormat
-import com.google.zxing.EncodeHintType
-import com.google.zxing.WriterException
-import com.google.zxing.common.BitMatrix
-import com.google.zxing.oned.Code128Writer
-import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel
+import com.example.lsb3.ui.viewmodel.AddEditCardViewModel
+import com.example.lsb3.ui.viewmodel.MainViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.util.*
 
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
+    private lateinit var viewModel: MainViewModel
 
     private val appSpecificStorageManager: AppSpecificStorageManager = AppSpecificStorageManager(this)
-
-    private val sharedStorageManager: SharedStorageManager = SharedStorageManager(this)
 
     private var position = -1
     private var cards = ArrayList<Card>()
@@ -48,7 +43,14 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        adapter = CardAdapter(this, cards)
+        viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
+
+        adapter = CardAdapter(this, cards, { position ->
+            val intent = Intent(this, ShowCardActivity::class.java).apply {
+                putExtra("card", cards[position].copy())
+            }
+            this.startActivity(intent)
+        })
         //cards = appSpecificStorageManager.read()
 
 
@@ -58,36 +60,23 @@ class MainActivity : AppCompatActivity() {
         // Привет, это я - твой код, не забывай меня коммитить!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         // Тебе же хуже будет!
 
-        CoroutineScope(Dispatchers.Default).launch {
-            val initialCards = MyApplication.dbManager.getAllCards().await()  // Твой метод, который возвращает список всех карт
-            initialCards.forEach { card ->
-                if (card.shtrBitmap == null) {
-                    card.shtrBitmap = createBarCode(card.shtr)
-                }
-            }
-            withContext(Dispatchers.Main) {
-                cards.clear()
-                cards.addAll(initialCards)
-                adapter.notifyDataSetChanged()
-            }
-        }
 
-        MyApplication.dbManager.cards.observe(this) { updatedCards ->
-            CoroutineScope(Dispatchers.Default).launch {
-                updatedCards.forEach { card ->
-                    if (card.shtrBitmap == null) {
-                        card.shtrBitmap = createBarCode(card.shtr)
-                    }
-                }
-                withContext(Dispatchers.Main) {
-                    cards.clear()
-                    cards.addAll(updatedCards)
+
+
+        viewModel.cards.observe(this) {
+            updatedCards ->
+            CoroutineScope(Dispatchers.IO).launch{
+                cards.clear()
+                cards.addAll(updatedCards)
+
+                runOnUiThread{
                     adapter.notifyDataSetChanged()
 
                 }
-
             }
+
         }
+
 
 
 
@@ -96,7 +85,6 @@ class MainActivity : AppCompatActivity() {
 
         binding.buttonAdd.setOnClickListener{
             intent = Intent(this, AddEditCardActivity::class.java)
-            //resultLauncher.launch(intent)
             startActivity(intent)
         }
 
@@ -114,38 +102,18 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
         else if (item.itemId == 122){
-            cards[item.groupId].shtrBitmap?.let { sharedStorageManager.saveBarcode(it) }
+            viewModel.saveBarCode(this,cards[item.groupId].shtrBitmap!!)
         }
 
         return super.onContextItemSelected(item)
     }
 
-    private fun createBarCode(codeData: String?): Bitmap? {
-        return try {
-            val hintMap = Hashtable<EncodeHintType, ErrorCorrectionLevel>()
-            hintMap[EncodeHintType.ERROR_CORRECTION] = ErrorCorrectionLevel.L
-
-            val codeWriter = Code128Writer()
-            val byteMatrix: BitMatrix = codeWriter.encode(
-                codeData,
-                BarcodeFormat.CODE_128,
-                500,
-                150,
-                hintMap
-            )
-            val width = byteMatrix.width
-            val height = byteMatrix.height
-            val imageBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
-            for (i in 0 until width) {
-                for (j in 0 until height) {
-                    imageBitmap.setPixel(i, j, if (byteMatrix[i, j]) Color.BLACK else Color.WHITE)
-                }
-            }
-            imageBitmap
-        } catch (e: WriterException) {
-            e.printStackTrace()
-            null
+    override fun onResume() {
+        super.onResume()
+        CoroutineScope(Dispatchers.IO).launch{
+            viewModel.loadCardsWithBitmaps()
         }
+
     }
 
 
@@ -162,7 +130,7 @@ class MainActivity : AppCompatActivity() {
                 true
             }
             R.id.action_save ->{
-                sharedStorageManager.saveToPdf(cards)
+                viewModel.saveToPdf(this,cards)
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -178,7 +146,10 @@ class MainActivity : AppCompatActivity() {
 
         override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
             val position = viewHolder.bindingAdapterPosition
-            MyApplication.dbManager.deleteCard(cards[position].id)
+
+            CoroutineScope(Dispatchers.IO).launch{
+                viewModel.deleteCard(cards[position].id)
+            }
 
         }
 

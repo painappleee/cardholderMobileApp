@@ -17,11 +17,11 @@ import com.itextpdf.layout.element.Paragraph
 import java.io.File
 import java.io.FileOutputStream
 
-class SharedStorageManager(private val context: Context) {
+object SharedStorageManager{
 
     private val filename = "cards.pdf"
 
-    fun saveToPdf(cards: ArrayList<Card>){
+    fun saveToPdf(context: Context, cards: ArrayList<Card>){
         Thread {
             try {
                 val filePath =
@@ -57,7 +57,7 @@ class SharedStorageManager(private val context: Context) {
         }.start()
     }
 
-    fun saveBarcode(barcode: Bitmap) {
+    fun saveBarcode(context: Context,barcode: Bitmap) {
         Thread {
             val contentResolver = context.contentResolver
             val imageCollection = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
