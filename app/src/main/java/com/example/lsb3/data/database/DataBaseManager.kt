@@ -1,17 +1,17 @@
-package com.example.lsb3
+package com.example.lsb3.data.database
 
 import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
-import android.util.Log
 import androidx.core.database.getLongOrNull
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.example.lsb3.data.model.Card
 import kotlinx.coroutines.*
 
-class DataBaseManager(context: Context): SQLiteOpenHelper(context,DATABASE_NAME, null, DATABASE_VERSION) {
+class DataBaseManager(context: Context): SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
 
     private val _cards = MutableLiveData<ArrayList<Card>>().apply {
         value = ArrayList()

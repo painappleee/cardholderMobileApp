@@ -1,10 +1,12 @@
-package com.example.lsb3
+package com.example.lsb3.ui.adapter
 
 import android.content.Context
 import android.content.Intent
 import android.view.*
 
 import androidx.recyclerview.widget.RecyclerView
+import com.example.lsb3.ui.view.ShowCardActivity
+import com.example.lsb3.data.model.Card
 import com.example.lsb3.databinding.CardItemBinding
 import kotlin.collections.ArrayList
 

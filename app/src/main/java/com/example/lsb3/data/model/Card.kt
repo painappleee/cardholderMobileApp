@@ -1,6 +1,8 @@
-package com.example.lsb3
+package com.example.lsb3.data.model
 
 import android.graphics.Bitmap
+import com.example.lsb3.R
+import com.example.lsb3.utils.BitmapConverter
 import java.io.Serializable
 
 data class Card(

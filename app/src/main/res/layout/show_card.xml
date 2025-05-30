@@ -7,13 +7,13 @@
         <import type="android.view.View"/>
         <variable
                 name="card"
-                type="com.example.lsb3.Card" />
+                type="com.example.lsb3.data.model.Card" />
     </data>
 
     <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            tools:context=".ShowCardActivity"
+            tools:context=".ui.view.ShowCardActivity"
             android:orientation="vertical"
             android:gravity="center_horizontal">
 

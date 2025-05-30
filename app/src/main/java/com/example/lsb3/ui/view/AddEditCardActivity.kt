@@ -1,13 +1,12 @@
-package com.example.lsb3
+package com.example.lsb3.ui.view
 
-import android.app.Activity
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.*
-import androidx.activity.contextaware.withContextAvailable
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
+import com.example.lsb3.MyApplication
+import com.example.lsb3.data.model.Card
 import com.example.lsb3.databinding.AddEditCardActivityBinding
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

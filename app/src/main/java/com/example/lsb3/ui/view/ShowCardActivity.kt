@@ -1,12 +1,12 @@
-package com.example.lsb3
+package com.example.lsb3.ui.view
 
 import android.os.Build
 import android.os.Bundle
-import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.isVisible
+import com.example.lsb3.data.model.Card
 import com.example.lsb3.databinding.ShowCardBinding
+import com.example.lsb3.utils.BitmapConverter
 
 class ShowCardActivity : AppCompatActivity() {
 

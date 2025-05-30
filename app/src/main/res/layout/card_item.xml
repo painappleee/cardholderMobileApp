@@ -5,7 +5,7 @@
         <import type="android.view.View"/>
         <variable
                 name="card"
-                type="com.example.lsb3.Card" />
+                type="com.example.lsb3.data.model.Card" />
     </data>
 
     <LinearLayout

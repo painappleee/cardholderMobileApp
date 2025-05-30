@@ -1,20 +1,22 @@
-package com.example.lsb3
+package com.example.lsb3.ui.view
 
-import android.app.Activity
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.Button
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
+import com.example.lsb3.MyApplication
+import com.example.lsb3.R
+import com.example.lsb3.data.model.Card
+import com.example.lsb3.data.storages.AppSpecificStorageManager
+import com.example.lsb3.data.storages.SharedStorageManager
 import com.example.lsb3.databinding.ActivityMainBinding
+import com.example.lsb3.ui.adapter.CardAdapter
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.EncodeHintType
 import com.google.zxing.WriterException
@@ -23,7 +25,6 @@ import com.google.zxing.oned.Code128Writer
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.*
@@ -33,8 +34,6 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
 
-    private lateinit var resultLauncher: ActivityResultLauncher<Intent>
-    private lateinit var resultEditLauncher: ActivityResultLauncher<Intent>
     private val appSpecificStorageManager: AppSpecificStorageManager = AppSpecificStorageManager(this)
 
     private val sharedStorageManager: SharedStorageManager = SharedStorageManager(this)
@@ -95,48 +94,6 @@ class MainActivity : AppCompatActivity() {
         val itemTouchHelper = ItemTouchHelper(SwipeToDeleteCallback(adapter))
         itemTouchHelper.attachToRecyclerView(binding.recView)
 
-
-        /*resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                val data: Intent? = result.data
-                val card = Card(
-                    data?.getStringExtra("name").toString(),
-                    data?.getStringExtra("shtr").toString(),
-                    data?.getBooleanExtra("isDisc",false)!!,
-                    data.getStringExtra("disc")
-                )
-
-                CoroutineScope(Dispatchers.IO).async {
-                    card.shtrBitmap = createBarCode(card.shtr)!!
-                    card.id = MyApplication.dbManager.getCardId(card).await()
-
-                    cards.add(card)
-                    //appSpecificStorageManager.write(card)
-                    //adapter.notifyItemInserted(cards.size - 1)
-                }
-            }
-        }*/
-
-        /*resultEditLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                val data: Intent? = result.data
-                val card = Card(
-                    data?.getStringExtra("name").toString(),
-                    data?.getStringExtra("shtr").toString(),
-                    data?.getBooleanExtra("isDisc",false)!!,
-                    data.getStringExtra("disc")
-                )
-                card.shtrBitmap = createBarCode(card.shtr)!!
-                card.id = cards[position].id
-                cards[position] = card
-                MyApplication.dbManager.editCard(card)
-                //appSpecificStorageManager.edit(position, card)
-                // adapter.notifyItemChanged(position)
-                position = -1
-
-            }
-        }*/
-
         binding.buttonAdd.setOnClickListener{
             intent = Intent(this, AddEditCardActivity::class.java)
             //resultLauncher.launch(intent)
@@ -152,16 +109,6 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this, AddEditCardActivity::class.java)
 
             position = item.groupId
-            /*intent.putExtra("name", cards[position].name)
-            intent.putExtra("shtr", cards[position].shtr)
-            intent.putExtra("isDisc", cards[position].isDisc)
-            if (cards[item.groupId].isDisc)
-                intent.putExtra("disc", cards[position].disc)
-
-
-            resultEditLauncher.launch(intent)
-
-             */
 
             intent.putExtra("cardId",cards[position].id)
             startActivity(intent)
@@ -232,8 +179,6 @@ class MainActivity : AppCompatActivity() {
         override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
             val position = viewHolder.bindingAdapterPosition
             MyApplication.dbManager.deleteCard(cards[position].id)
-            //adapter.removeItem(position)
-            //appSpecificStorageManager.delete(position)
 
         }
 

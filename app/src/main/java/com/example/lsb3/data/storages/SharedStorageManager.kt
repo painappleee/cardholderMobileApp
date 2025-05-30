@@ -1,4 +1,4 @@
-package com.example.lsb3
+package com.example.lsb3.data.storages
 
 import android.app.Activity
 import android.content.ContentValues
@@ -7,8 +7,8 @@ import android.graphics.Bitmap
 import android.os.Environment
 import android.provider.MediaStore
 import android.widget.Toast
+import com.example.lsb3.data.model.Card
 import com.itextpdf.io.image.ImageDataFactory
-import com.itextpdf.io.source.ByteArrayOutputStream
 import com.itextpdf.kernel.pdf.PdfDocument
 import com.itextpdf.kernel.pdf.PdfWriter
 import com.itextpdf.layout.Document
