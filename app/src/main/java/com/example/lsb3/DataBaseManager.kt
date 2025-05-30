@@ -5,6 +5,7 @@ import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import android.util.Log
 import androidx.core.database.getLongOrNull
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -77,9 +78,41 @@ class DataBaseManager(context: Context): SQLiteOpenHelper(context,DATABASE_NAME,
         }
     }
 
-    fun getCardId(card: Card): Deferred<Int> {
+    fun getCardById(id: Int): Deferred<Card?> {
         return CoroutineScope(Dispatchers.IO).async {
-            var id = -1
+            val db = this@DataBaseManager.readableDatabase
+
+            val query = ("SELECT " +
+                    "Cards.id AS id, " +
+                    "Cards.barcode, " +
+                    "Cards.isDisc, " +
+                    "Cards.disc, " +
+                    "Stores.name AS name " +
+                    "FROM Cards " +
+                    "INNER JOIN Stores ON Cards.id_store = Stores.id " +
+                    "WHERE Cards.id = ?")
+
+            val cursor = db.rawQuery(query, arrayOf(id.toString()))
+            var card: Card? = null
+
+            if (cursor.moveToFirst()) {
+                card = Card(
+                    cursor.getString(cursor.getColumnIndexOrThrow("name")),
+                    cursor.getString(cursor.getColumnIndexOrThrow("barcode")),
+                    cursor.getInt(cursor.getColumnIndexOrThrow("isDisc")) == 1,
+                    cursor.getInt(cursor.getColumnIndexOrThrow("disc")).toString()
+                )
+                card.id = cursor.getInt(cursor.getColumnIndexOrThrow("id"))
+            }
+
+            cursor.close()
+            return@async card
+        }
+    }
+
+
+    fun addCard(card: Card) {
+       CoroutineScope(Dispatchers.IO).launch {
             val db = this@DataBaseManager.writableDatabase
 
             val values = ContentValues().apply {
@@ -90,15 +123,14 @@ class DataBaseManager(context: Context): SQLiteOpenHelper(context,DATABASE_NAME,
                     put("disc", card.disc!!.toInt())
             }
 
-            id = db.insert("Cards", null, values).toInt()
+            db.insert("Cards", null, values)
 
             refreshCards()
 
-            return@async id
         }
     }
 
-    private fun refreshCards() {
+    fun refreshCards() {
         CoroutineScope(Dispatchers.IO).launch {
             val cardList = getAllCards().await()
             withContext(Dispatchers.Main) {
@@ -153,7 +185,7 @@ class DataBaseManager(context: Context): SQLiteOpenHelper(context,DATABASE_NAME,
 
     }
 
-    fun editCard(id:Int, card: Card){
+    fun editCard(card: Card){
         CoroutineScope(Dispatchers.IO).launch {
             val db = this@DataBaseManager.writableDatabase
 
@@ -166,7 +198,7 @@ class DataBaseManager(context: Context): SQLiteOpenHelper(context,DATABASE_NAME,
             else
                 null
 
-            db.execSQL(queryUpdateCard, arrayOf(getStoreId(card.name).await(), card.shtr, card.isDisc, disc, id))
+            db.execSQL(queryUpdateCard, arrayOf(getStoreId(card.name).await(), card.shtr, card.isDisc, disc, card.id))
 
             refreshCards()
         }

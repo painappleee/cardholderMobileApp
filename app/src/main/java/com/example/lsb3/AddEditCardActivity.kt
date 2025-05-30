@@ -3,15 +3,23 @@ package com.example.lsb3
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.*
+import androidx.activity.contextaware.withContextAvailable
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import com.example.lsb3.databinding.AddEditCardActivityBinding
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.withContext
 
 class AddEditCardActivity: AppCompatActivity() {
 
     private lateinit var binding: AddEditCardActivityBinding
     private lateinit var card: Card
+
+    private var isEdit: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -21,20 +29,26 @@ class AddEditCardActivity: AppCompatActivity() {
 
         val intent = intent
 
-        if (intent.hasExtra("name")) {
+        if (intent.hasExtra("cardId")) {
             binding.edit = true
-
-            card =Card(intent.getStringExtra("name")!!,
-                intent.getStringExtra("shtr")!!,
-                !intent.getBooleanExtra("isDisc", true),
-                intent.getStringExtra("disc"))
+            isEdit = true
 
 
-            binding.card = card
+            CoroutineScope(Dispatchers.IO).async {
+                card = MyApplication.dbManager.getCardById(intent.getIntExtra("cardId", -1)).await()!!
+
+                withContext(Dispatchers.Main){
+                    Log.d("isDisc",card.isDisc.toString())
+                    binding.card = card
+
+                }
+            }
+
 
         }
         else{
             binding.edit = false
+            isEdit = false
         }
 
         binding.checkBox.setOnCheckedChangeListener{ checkBox, isChecked ->
@@ -49,12 +63,23 @@ class AddEditCardActivity: AppCompatActivity() {
             var isDiscCorrect: Boolean = (binding.checkBox.isChecked) || (!binding.checkBox.isChecked && disc!=null && binding.etDisc.text.toString().toInt()<100 )
 
             if (binding.etName.text.isNotEmpty() && binding.etShtr.text.isNotEmpty() && isDiscCorrect) {
-                val returnIntent = Intent()
-                returnIntent.putExtra("name", binding.etName.text.toString())
-                returnIntent.putExtra("shtr", binding.etShtr.text.toString())
-                returnIntent.putExtra("isDisc", !binding.checkBox.isChecked)
-                returnIntent.putExtra("disc", disc)
-                setResult(Activity.RESULT_OK, returnIntent)
+
+                val name = binding.etName.text.toString()
+                val shtr = binding.etShtr.text.toString()
+                val isDisc = !binding.checkBox.isChecked
+                val disc = binding.etDisc.text.toString()
+
+                val updatedCard = Card(name, shtr, isDisc, disc)
+
+
+                if (isEdit){
+                    updatedCard.id = card.id
+                    MyApplication.dbManager.editCard(updatedCard)
+                }
+                else{
+                    MyApplication.dbManager.addCard(updatedCard)
+                }
+
                 finish()
             }
             else if(disc!=null && binding.etDisc.text.toString().toInt()>=100){

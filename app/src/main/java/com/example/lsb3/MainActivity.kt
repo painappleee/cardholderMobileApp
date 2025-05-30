@@ -59,6 +59,20 @@ class MainActivity : AppCompatActivity() {
         // Привет, это я - твой код, не забывай меня коммитить!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         // Тебе же хуже будет!
 
+        CoroutineScope(Dispatchers.Default).launch {
+            val initialCards = MyApplication.dbManager.getAllCards().await()  // Твой метод, который возвращает список всех карт
+            initialCards.forEach { card ->
+                if (card.shtrBitmap == null) {
+                    card.shtrBitmap = createBarCode(card.shtr)
+                }
+            }
+            withContext(Dispatchers.Main) {
+                cards.clear()
+                cards.addAll(initialCards)
+                adapter.notifyDataSetChanged()
+            }
+        }
+
         MyApplication.dbManager.cards.observe(this) { updatedCards ->
             CoroutineScope(Dispatchers.Default).launch {
                 updatedCards.forEach { card ->
@@ -70,16 +84,19 @@ class MainActivity : AppCompatActivity() {
                     cards.clear()
                     cards.addAll(updatedCards)
                     adapter.notifyDataSetChanged()
+
                 }
+
             }
         }
+
 
 
         val itemTouchHelper = ItemTouchHelper(SwipeToDeleteCallback(adapter))
         itemTouchHelper.attachToRecyclerView(binding.recView)
 
 
-        resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        /*resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
                 val data: Intent? = result.data
                 val card = Card(
@@ -98,9 +115,9 @@ class MainActivity : AppCompatActivity() {
                     //adapter.notifyItemInserted(cards.size - 1)
                 }
             }
-        }
+        }*/
 
-        resultEditLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        /*resultEditLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
                 val data: Intent? = result.data
                 val card = Card(
@@ -112,17 +129,18 @@ class MainActivity : AppCompatActivity() {
                 card.shtrBitmap = createBarCode(card.shtr)!!
                 card.id = cards[position].id
                 cards[position] = card
-                MyApplication.dbManager.editCard(cards[position].id, card)
+                MyApplication.dbManager.editCard(card)
                 //appSpecificStorageManager.edit(position, card)
                 // adapter.notifyItemChanged(position)
                 position = -1
 
             }
-        }
+        }*/
 
         binding.buttonAdd.setOnClickListener{
             intent = Intent(this, AddEditCardActivity::class.java)
-            resultLauncher.launch(intent)
+            //resultLauncher.launch(intent)
+            startActivity(intent)
         }
 
 
@@ -134,7 +152,7 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this, AddEditCardActivity::class.java)
 
             position = item.groupId
-            intent.putExtra("name", cards[position].name)
+            /*intent.putExtra("name", cards[position].name)
             intent.putExtra("shtr", cards[position].shtr)
             intent.putExtra("isDisc", cards[position].isDisc)
             if (cards[item.groupId].isDisc)
@@ -142,6 +160,11 @@ class MainActivity : AppCompatActivity() {
 
 
             resultEditLauncher.launch(intent)
+
+             */
+
+            intent.putExtra("cardId",cards[position].id)
+            startActivity(intent)
         }
         else if (item.itemId == 122){
             cards[item.groupId].shtrBitmap?.let { sharedStorageManager.saveBarcode(it) }
@@ -188,7 +211,7 @@ class MainActivity : AppCompatActivity() {
         return when (item.itemId) {
             R.id.action_add -> {
                 intent = Intent(this, AddEditCardActivity::class.java)
-                resultLauncher.launch(intent)
+                startActivity(intent)
                 true
             }
             R.id.action_save ->{
