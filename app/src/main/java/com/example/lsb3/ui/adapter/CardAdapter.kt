@@ -1,17 +1,15 @@
 package com.example.lsb3.ui.adapter
 
-import android.content.Context
-import android.content.Intent
 import android.view.*
 
 import androidx.recyclerview.widget.RecyclerView
-import com.example.lsb3.ui.view.ShowCardActivity
 import com.example.lsb3.data.model.Card
 import com.example.lsb3.databinding.CardItemBinding
+import com.example.lsb3.ui.fragments.MainFragment
 import kotlin.collections.ArrayList
 
 
-class CardAdapter(var context: Context, var cards: ArrayList<Card>, var action: (Int) -> Unit): RecyclerView.Adapter<CardAdapter.CardViewHolder>() {
+class CardAdapter(var context: MainFragment, var cards: ArrayList<Card>, var action: (Int) -> Unit): RecyclerView.Adapter<CardAdapter.CardViewHolder>() {
 
 
     fun removeItem(position: Int) {

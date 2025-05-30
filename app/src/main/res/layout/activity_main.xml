@@ -7,19 +7,10 @@
         android:layout_height="match_parent"
         tools:context=".ui.view.MainActivity" android:orientation="vertical" android:gravity="center_horizontal"
         android:background="#FFFDF6FE">
-    <TextView
-            android:layout_height="50dp"
-            android:text="Ваши карты"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            android:layout_width="match_parent"
-            android:id="@+id/header2" android:textColor="#FFFFFF" android:background="#673AB7" android:textSize="21sp"
-            android:gravity="center_vertical|center_horizontal" android:paddingLeft="20dp"/>
-    <view class="androidx.recyclerview.widget.RecyclerView"
-          android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/recView"
-          android:background="#FFFDF6FE">
-    </view>
-    <Button android:layout_width="wrap_content" android:layout_height="wrap_content"
-            android:backgroundTint="#CDCDCD" android:text="+ добавить" android:id="@+id/buttonAdd"></Button>
+    <FrameLayout android:layout_width="match_parent"
+                 android:layout_height="match_parent"
+                 android:id="@+id/frlayout"
+    >
+
+    </FrameLayout>
 </LinearLayout>

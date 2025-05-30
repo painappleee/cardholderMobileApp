@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        tools:context=".ui.fragments.AddEditCardFragment">
+
+    <data>
+        <import type="android.view.View"/>
+        <variable
+                name="card"
+                type="com.example.lsb3.data.model.Card" />
+        <variable
+                name="edit"
+                type="Boolean" />
+
+    </data>
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:background="#FDF6FE">
+
+        <androidx.appcompat.widget.Toolbar
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="?attr/colorPrimary"
+                android:id="@+id/toolBar"
+                app:title="@string/app_name"
+                app:titleTextColor="@android:color/white"/>
+
+        <TextView
+                android:id="@+id/header"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:textColor="#FFFFFF"
+                android:background="#673AB7"
+                android:textSize="21sp"
+                android:gravity="center"
+                android:text='@{edit ? "Редактировать карту" : "Добавить карту" }'
+                android:paddingLeft="20dp" />
+
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+            <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="20dp">
+
+                <TextView
+                        android:text="Название магазина"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="10dp"
+                        android:textColor="#000000" />
+
+                <EditText
+                        android:id="@+id/etName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="48dp"
+                        android:ems="10"
+                        android:hint="магазин"
+                        android:text="@={card.name}"
+                        android:gravity="center" />
+            </LinearLayout>
+
+            <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="20dp">
+
+                <TextView
+                        android:text="Штрих-код"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="70dp"
+                        android:textColor="#000000" />
+
+                <EditText
+                        android:id="@+id/etShtr"
+                        android:layout_width="wrap_content"
+                        android:layout_height="48dp"
+                        android:inputType="number"
+                        android:ems="10"
+                        android:hint="56748932"
+                        android:text="@={card.shtr}"
+                        android:gravity="center" />
+            </LinearLayout>
+
+            <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="20dp">
+
+                <CheckBox
+                        android:id="@+id/checkBox"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Накопительная"
+                        android:textSize="14sp"
+                        android:textColor="#000000"
+                        android:checked="@{!card.isDisc}"/>
+
+                <LinearLayout
+                        android:id="@+id/ltDisc"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:visibility='@{card.isDisc ? View.VISIBLE : View.GONE}'>
+
+                    <TextView
+                            android:text="Размер скидки"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginRight="10dp"
+                            android:layout_marginLeft="20dp"
+                            android:textColor="#000000" />
+
+                    <EditText
+                            android:id="@+id/etDisc"
+                            android:layout_width="wrap_content"
+                            android:layout_height="48dp"
+                            android:inputType="number"
+                            android:ems="3"
+                            android:hint="10"
+                            android:text="@={card.disc}"
+                            android:gravity="center" />
+
+                    <TextView
+                            android:text="%"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="16sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+        </LinearLayout>
+
+        <Button
+                android:id="@+id/btnBack"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text='@{edit ? "Сохранить" : "Добавить"}'
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="20dp"
+                android:gravity="center" />
+    </LinearLayout>
+</layout>
