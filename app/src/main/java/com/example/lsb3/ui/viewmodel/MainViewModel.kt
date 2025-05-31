@@ -4,10 +4,13 @@ import android.app.Application
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Color
+import android.util.Log
+import android.widget.ImageView
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.bumptech.glide.Glide
 import com.example.lsb3.MyApplication
 import com.example.lsb3.data.model.Card
 import com.example.lsb3.data.storages.SharedStorageManager
@@ -19,6 +22,8 @@ import com.google.zxing.common.BitMatrix
 import com.google.zxing.oned.Code128Writer
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel
 import kotlinx.coroutines.*
+import java.net.HttpURLConnection
+import java.net.URL
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -31,22 +36,40 @@ class MainViewModel: ViewModel() {
     init {
         CoroutineScope(Dispatchers.IO).launch{
             loadCardsWithBitmaps()
-
         }
     }
 
 
-    suspend fun loadCardsWithBitmaps() {
+    private suspend fun loadCardsWithBitmaps() {
         val rawCards = withContext(Dispatchers.IO) {
             val cards = MyApplication.dbManager.getAllCards()
-            cards.forEach { card ->
+            for (card in cards){
                 card.shtrBitmap = createBarCode(card.shtr)
+                val url = "http://10.0.2.2:5282/images/${card.name}.png"
+                card.shopImg = if (imageExists(url)) url else null
             }
             cards
         }
-
         _cards.postValue(rawCards)
 
+    }
+
+    private suspend fun imageExists(urlStr: String): Boolean {
+        return withContext(Dispatchers.IO) {
+            try {
+                val url = URL(urlStr)
+                val connection = url.openConnection() as HttpURLConnection
+                connection.requestMethod = "GET"
+                connection.connectTimeout = 3000
+                connection.readTimeout = 3000
+                connection.connect()
+                val responseCode = connection.responseCode
+                connection.disconnect()
+                responseCode == HttpURLConnection.HTTP_OK
+            } catch (e: Exception) {
+                false
+            }
+        }
     }
 
 

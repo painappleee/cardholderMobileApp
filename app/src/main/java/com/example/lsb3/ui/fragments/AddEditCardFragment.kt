@@ -1,8 +1,11 @@
 package com.example.lsb3.ui.fragments
 
+import android.net.Uri
 import android.os.Bundle
 import android.view.*
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
@@ -24,6 +27,8 @@ class AddEditCardFragment : Fragment() {
     private lateinit var viewModel: AddEditCardViewModel
     private var cardId: Int = -1
     private var isEdit: Boolean = false
+    private var selectedImageUri: Uri? = null
+    private lateinit var imagePickerLauncher: ActivityResultLauncher<String>
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = FragmentAddEditCardBinding.inflate(inflater, container, false)
@@ -32,6 +37,16 @@ class AddEditCardFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         viewModel = ViewModelProvider(this).get(AddEditCardViewModel::class.java)
+
+        imagePickerLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+            uri?.let {
+                selectedImageUri = it
+                binding.iVSelectedImage.setImageURI(it)
+            }
+        }
+
+
+
 
 
         val activity = (requireActivity() as AppCompatActivity)
@@ -70,6 +85,10 @@ class AddEditCardFragment : Fragment() {
         }
         else{
             binding.edit = false
+
+            binding.iVSelectedImage.setOnClickListener {
+                imagePickerLauncher.launch("image/*")  // открывает галерею
+            }
         }
 
         binding.checkBox.setOnCheckedChangeListener{ checkBox, isChecked ->
@@ -90,12 +109,18 @@ class AddEditCardFragment : Fragment() {
             val updatedCard = Card(name, shtr, isDisc, if (isDisc) disc else null)
 
             CoroutineScope(Dispatchers.IO).launch{
+
+
+
                 if (isEdit){
                     updatedCard.id = cardId
                     viewModel.editCard(updatedCard)
                 }
                 else{
                     viewModel.addCard(updatedCard)
+                    if (selectedImageUri != null) {
+                        viewModel.uploadImageToServer(requireContext(), selectedImageUri!!, name)
+                    }
                 }
 
                 withContext(Dispatchers.Main){

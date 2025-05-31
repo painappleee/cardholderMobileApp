@@ -143,9 +143,13 @@ class MainFragment : Fragment() {
 
         override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
             val position = viewHolder.bindingAdapterPosition
+            val idToDelete = cards[position].id
 
-            CoroutineScope(Dispatchers.IO).launch{
-                viewModel.deleteCard(cards[position].id)
+            cards.removeAt(position)
+            adapter.notifyItemRemoved(position)
+
+            CoroutineScope(Dispatchers.IO).launch {
+                viewModel.deleteCard(idToDelete)
             }
 
         }

@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.bumptech.glide.Glide
 import com.example.lsb3.R
 import com.example.lsb3.data.model.Card
 import com.example.lsb3.databinding.FragmentShowCardBinding
@@ -33,6 +34,12 @@ class ShowCardFragment : Fragment() {
 
         binding.card = card
         binding.shtrImage.setImageBitmap(BitmapConverter.scaledBitmap(card?.shtrBitmap!!, 3f))
+
+        card.shopImg!=null
+            Glide.with(binding.root.context)
+                .load(card.shopImg)
+                .placeholder(R.drawable.nophoto)
+                .into(binding.shopImage)
 
         binding.btnBack.setOnClickListener {
             finish()

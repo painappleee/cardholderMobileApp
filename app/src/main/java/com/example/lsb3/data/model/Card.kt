@@ -12,7 +12,7 @@ data class Card(
     var disc: String? = null,
     var shtrImg: ByteArray? = null,
     var id: Int =0,
-    var shopImg: Int = R.drawable.nophoto
+    var shopImg: String? = null
 ): Serializable {
     var shtrBitmap: Bitmap?
         get() = BitmapConverter.byteArrayToBitmap(this.shtrImg)

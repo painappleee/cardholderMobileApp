@@ -3,6 +3,8 @@ package com.example.lsb3.ui.adapter
 import android.view.*
 
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.example.lsb3.R
 import com.example.lsb3.data.model.Card
 import com.example.lsb3.databinding.CardItemBinding
 import com.example.lsb3.ui.fragments.MainFragment
@@ -41,6 +43,15 @@ class CardAdapter(var context: MainFragment, var cards: ArrayList<Card>, var act
         fun bind(card: Card){
             binding.card = card
             binding.iVShtr.setImageBitmap(card.shtrBitmap)
+
+            if(card.shopImg!=null){
+                Glide.with(binding.root.context)
+                    .load(card.shopImg)
+                    .into(binding.iVShop)
+            }
+
+
+
             binding.executePendingBindings()
         }
 
