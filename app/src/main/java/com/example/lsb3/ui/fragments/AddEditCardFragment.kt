@@ -18,6 +18,7 @@ import com.example.lsb3.R
 import com.example.lsb3.data.model.Card
 import com.example.lsb3.databinding.FragmentAddEditCardBinding
 import com.example.lsb3.ui.viewmodel.AddEditCardViewModel
+import com.example.lsb3.usecase.CardValidator
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -112,7 +113,7 @@ class AddEditCardFragment : Fragment() {
             val disc = binding.etDisc.text.toString()
             val isDisc = !binding.checkBox.isChecked
 
-            if (name.isEmpty() || shtr.isEmpty() || (isDisc && (disc.isEmpty() || disc.toIntOrNull() == null || disc.toInt() >= 100))) {
+            if (!CardValidator.validate(name,shtr,isDisc,disc)) {
                 Toast.makeText(requireContext(), "Заполните все поля корректно", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
@@ -120,9 +121,6 @@ class AddEditCardFragment : Fragment() {
             val updatedCard = Card(name, shtr, isDisc, if (isDisc) disc else null)
 
             CoroutineScope(Dispatchers.IO).launch{
-
-
-
                 if (isEdit){
                     updatedCard.id = cardId
                     viewModel.editCard(updatedCard)
