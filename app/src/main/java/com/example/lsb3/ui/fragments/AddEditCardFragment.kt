@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.lsb3.R
 import com.example.lsb3.data.model.Card
 import com.example.lsb3.databinding.FragmentAddEditCardBinding
@@ -77,7 +78,14 @@ class AddEditCardFragment : Fragment() {
             CoroutineScope(Dispatchers.IO).launch{
                 val card = viewModel.getCard(cardId)
 
+
                 activity?.runOnUiThread {
+                    Glide.with(binding.root.context)
+                        .load(card?.shopImg)
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .placeholder(R.drawable.nophoto)
+                        .into(binding.iVSelectedImage)
+
                     binding.card = card
 
                 }
@@ -123,6 +131,7 @@ class AddEditCardFragment : Fragment() {
                     viewModel.addCard(updatedCard)
                     if (selectedImageUri != null) {
                         viewModel.uploadImageToServer(requireContext(), selectedImageUri!!, name)
+                        viewModel.cancelCoroutine()
                     }
                 }
 

@@ -9,6 +9,7 @@ import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.lsb3.R
 import com.example.lsb3.data.model.Card
 import com.example.lsb3.databinding.FragmentShowCardBinding
@@ -37,6 +38,7 @@ class ShowCardFragment : Fragment() {
 
         Glide.with(binding.root.context)
             .load(card.shopImg)
+            .diskCacheStrategy(DiskCacheStrategy.ALL)
             .placeholder(R.drawable.nophoto)
             .into(binding.shopImage)
 

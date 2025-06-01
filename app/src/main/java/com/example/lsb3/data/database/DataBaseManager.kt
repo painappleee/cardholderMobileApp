@@ -110,12 +110,26 @@ class DataBaseManager(context: Context): SQLiteOpenHelper(context, DATABASE_NAME
     suspend fun addCard(card: Card) {
         val db = this@DataBaseManager.writableDatabase
 
-        val values = ContentValues().apply {
-            put("id_store", getStoreId(card.name))
-            put("barcode", card.shtr)
-            put("isDisc", card.isDisc)
-            if (card.isDisc)
-                put("disc", card.disc!!.toInt())
+        var storeId: Int = -1
+        var values: ContentValues? = null
+
+        coroutineScope {
+            var storeIdjob = launch {
+                storeId = getStoreId(card.name)
+            }
+
+            storeIdjob.join()
+
+
+            launch {
+                values = ContentValues().apply {
+                    put("id_store", storeId)
+                    put("barcode", card.shtr)
+                    put("isDisc", card.isDisc)
+                    if (card.isDisc)
+                        put("disc", card.disc!!.toInt())
+                }
+            }
         }
 
         db.insert("Cards", null, values)

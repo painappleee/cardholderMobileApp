@@ -4,6 +4,7 @@ import android.view.*
 
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.lsb3.R
 import com.example.lsb3.data.model.Card
 import com.example.lsb3.databinding.CardItemBinding
@@ -47,6 +48,7 @@ class CardAdapter(var context: MainFragment, var cards: ArrayList<Card>, var act
             if(card.shopImg!=null){
                 Glide.with(binding.root.context)
                     .load(card.shopImg)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(binding.iVShop)
             }
 

@@ -2,18 +2,47 @@ package com.example.lsb3.ui.viewmodel
 
 import android.content.Context
 import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.lsb3.MyApplication
 import com.example.lsb3.data.database.DataBaseManager
 import com.example.lsb3.data.model.Card
+import com.example.lsb3.network.NetworkManager
 import kotlinx.coroutines.*
 import java.io.DataOutputStream
 import java.net.HttpURLConnection
 import java.net.URL
 
-class AddEditCardViewModel(private val dbManager: DataBaseManager):ViewModel() {
+class AddEditCardViewModel(private val dbManager: DataBaseManager, private val networkManager: NetworkManager):ViewModel() {
     suspend fun getCard(cardId: Int): Card? {
-        return dbManager.getCardById(cardId)
+        var card = dbManager.getCardById(cardId)
+
+        val url = "http://10.0.2.2:5282/images/${card?.name}.png"
+        card?.shopImg = if (networkManager.imageExists(url)) url else null
+
+        return card
+    }
+
+    private lateinit var job: Job
+
+    suspend fun uploadImageToServer(context: Context, uri: Uri, fileNameWithoutExt: String) {
+
+     job = viewModelScope.launch {
+            try {
+                delay(5000)
+
+                networkManager.uploadImageToServer(context, uri, fileNameWithoutExt)
+            } catch (e: CancellationException) {
+                Log.d("canceled","true")
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    fun cancelCoroutine(){
+        job.cancel()
     }
 
     suspend fun addCard(card: Card){
@@ -24,33 +53,5 @@ class AddEditCardViewModel(private val dbManager: DataBaseManager):ViewModel() {
         dbManager.editCard(card)
     }
 
-    suspend fun uploadImageToServer(context: Context, uri: Uri, fileNameWithoutExt: String): Boolean {
-        return withContext(Dispatchers.IO) {
-            try {
-                val inputStream = context.contentResolver.openInputStream(uri)
-                val fileBytes = inputStream?.readBytes() ?: return@withContext false
-                val url = URL("http://10.0.2.2:5282/upload")
 
-                val boundary = "Boundary-${System.currentTimeMillis()}"
-                val connection = url.openConnection() as HttpURLConnection
-                connection.doOutput = true
-                connection.requestMethod = "POST"
-                connection.setRequestProperty("Content-Type", "multipart/form-data; boundary=$boundary")
-
-                val output = DataOutputStream(connection.outputStream)
-                output.writeBytes("--$boundary\r\n")
-                output.writeBytes("Content-Disposition: form-data; name=\"image\"; filename=\"$fileNameWithoutExt.png\"\r\n")
-                output.writeBytes("Content-Type: image/png\r\n\r\n")
-                output.write(fileBytes)
-                output.writeBytes("\r\n--$boundary--\r\n")
-                output.flush()
-                output.close()
-
-                connection.responseCode == HttpURLConnection.HTTP_OK
-            } catch (e: Exception) {
-                e.printStackTrace()
-                false
-            }
-        }
-    }
 }

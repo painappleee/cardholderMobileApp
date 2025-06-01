@@ -6,15 +6,13 @@ import android.graphics.Bitmap
 import android.graphics.Color
 import android.util.Log
 import android.widget.ImageView
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
 import com.bumptech.glide.Glide
 import com.example.lsb3.MyApplication
 import com.example.lsb3.data.database.DataBaseManager
 import com.example.lsb3.data.model.Card
 import com.example.lsb3.data.storages.SharedStorageManager
+import com.example.lsb3.network.NetworkManager
 import com.example.lsb3.ui.view.MainActivity
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.EncodeHintType
@@ -28,14 +26,14 @@ import java.net.URL
 import java.util.*
 import kotlin.collections.ArrayList
 
-class MainViewModel(private val dbManager: DataBaseManager): ViewModel() {
+class MainViewModel(private val dbManager: DataBaseManager, private val networkManager: NetworkManager): ViewModel() {
 
 
     private val _cards = MutableLiveData<ArrayList<Card>>()
     val cards: LiveData<ArrayList<Card>> get() = _cards
 
     init {
-        CoroutineScope(Dispatchers.IO).launch{
+        viewModelScope.launch{
             loadCardsWithBitmaps()
         }
     }
@@ -47,32 +45,13 @@ class MainViewModel(private val dbManager: DataBaseManager): ViewModel() {
             for (card in cards){
                 card.shtrBitmap = createBarCode(card.shtr)
                 val url = "http://10.0.2.2:5282/images/${card.name}.png"
-                card.shopImg = if (imageExists(url)) url else null
+                card.shopImg = if (networkManager.imageExists(url)) url else null
             }
             cards
         }
         _cards.postValue(rawCards)
 
     }
-
-    private suspend fun imageExists(urlStr: String): Boolean {
-        return withContext(Dispatchers.IO) {
-            try {
-                val url = URL(urlStr)
-                val connection = url.openConnection() as HttpURLConnection
-                connection.requestMethod = "GET"
-                connection.connectTimeout = 3000
-                connection.readTimeout = 3000
-                connection.connect()
-                val responseCode = connection.responseCode
-                connection.disconnect()
-                responseCode == HttpURLConnection.HTTP_OK
-            } catch (e: Exception) {
-                false
-            }
-        }
-    }
-
 
 
     private fun createBarCode(codeData: String?): Bitmap? {

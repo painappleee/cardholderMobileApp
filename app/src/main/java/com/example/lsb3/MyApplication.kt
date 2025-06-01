@@ -2,6 +2,7 @@ package com.example.lsb3
 
 import android.app.Application
 import com.example.lsb3.data.database.DataBaseManager
+import com.example.lsb3.network.NetworkManager
 import com.example.lsb3.ui.viewmodel.AddEditCardViewModel
 import com.example.lsb3.ui.viewmodel.MainViewModel
 import org.koin.android.ext.koin.androidContext
@@ -16,8 +17,9 @@ class MyApplication : Application() {
 
         val appModule = module {
             single { DataBaseManager(androidContext()) }
-            viewModel { AddEditCardViewModel(get()) }
-            viewModel{MainViewModel(get())}
+            single { NetworkManager() }
+            viewModel { AddEditCardViewModel(get(),get()) }
+            viewModel{MainViewModel(get(),get())}
         }
 
         startKoin {
