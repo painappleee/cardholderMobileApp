@@ -35,11 +35,10 @@ class ShowCardFragment : Fragment() {
         binding.card = card
         binding.shtrImage.setImageBitmap(BitmapConverter.scaledBitmap(card?.shtrBitmap!!, 3f))
 
-        card.shopImg!=null
-            Glide.with(binding.root.context)
-                .load(card.shopImg)
-                .placeholder(R.drawable.nophoto)
-                .into(binding.shopImage)
+        Glide.with(binding.root.context)
+            .load(card.shopImg)
+            .placeholder(R.drawable.nophoto)
+            .into(binding.shopImage)
 
         binding.btnBack.setOnClickListener {
             finish()

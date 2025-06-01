@@ -4,23 +4,24 @@ import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import com.example.lsb3.MyApplication
+import com.example.lsb3.data.database.DataBaseManager
 import com.example.lsb3.data.model.Card
 import kotlinx.coroutines.*
 import java.io.DataOutputStream
 import java.net.HttpURLConnection
 import java.net.URL
 
-class AddEditCardViewModel:ViewModel() {
+class AddEditCardViewModel(private val dbManager: DataBaseManager):ViewModel() {
     suspend fun getCard(cardId: Int): Card? {
-        return MyApplication.dbManager.getCardById(cardId)
+        return dbManager.getCardById(cardId)
     }
 
     suspend fun addCard(card: Card){
-        MyApplication.dbManager.addCard(card)
+        dbManager.addCard(card)
     }
 
     suspend fun editCard(card: Card){
-        MyApplication.dbManager.editCard(card)
+        dbManager.editCard(card)
     }
 
     suspend fun uploadImageToServer(context: Context, uri: Uri, fileNameWithoutExt: String): Boolean {

@@ -12,6 +12,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.bumptech.glide.Glide
 import com.example.lsb3.MyApplication
+import com.example.lsb3.data.database.DataBaseManager
 import com.example.lsb3.data.model.Card
 import com.example.lsb3.data.storages.SharedStorageManager
 import com.example.lsb3.ui.view.MainActivity
@@ -27,7 +28,7 @@ import java.net.URL
 import java.util.*
 import kotlin.collections.ArrayList
 
-class MainViewModel: ViewModel() {
+class MainViewModel(private val dbManager: DataBaseManager): ViewModel() {
 
 
     private val _cards = MutableLiveData<ArrayList<Card>>()
@@ -42,7 +43,7 @@ class MainViewModel: ViewModel() {
 
     private suspend fun loadCardsWithBitmaps() {
         val rawCards = withContext(Dispatchers.IO) {
-            val cards = MyApplication.dbManager.getAllCards()
+            val cards = dbManager.getAllCards()
             for (card in cards){
                 card.shtrBitmap = createBarCode(card.shtr)
                 val url = "http://10.0.2.2:5282/images/${card.name}.png"
@@ -104,7 +105,7 @@ class MainViewModel: ViewModel() {
     }
 
     suspend fun deleteCard(cardId: Int){
-        MyApplication.dbManager.deleteCard(cardId)
+        dbManager.deleteCard(cardId)
     }
 
     fun saveBarCode(context: Context, bitmap: Bitmap){

@@ -12,6 +12,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
+import com.bumptech.glide.Glide
 import com.example.lsb3.R
 import com.example.lsb3.data.model.Card
 import com.example.lsb3.databinding.FragmentAddEditCardBinding
@@ -20,11 +21,13 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.koin.androidx.viewmodel.ext.android.viewModel
+
 
 
 class AddEditCardFragment : Fragment() {
     private lateinit var binding: FragmentAddEditCardBinding
-    private lateinit var viewModel: AddEditCardViewModel
+    private val viewModel: AddEditCardViewModel by viewModel()
     private var cardId: Int = -1
     private var isEdit: Boolean = false
     private var selectedImageUri: Uri? = null
@@ -36,7 +39,6 @@ class AddEditCardFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        viewModel = ViewModelProvider(this).get(AddEditCardViewModel::class.java)
 
         imagePickerLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
             uri?.let {
@@ -44,9 +46,6 @@ class AddEditCardFragment : Fragment() {
                 binding.iVSelectedImage.setImageURI(it)
             }
         }
-
-
-
 
 
         val activity = (requireActivity() as AppCompatActivity)
@@ -77,10 +76,14 @@ class AddEditCardFragment : Fragment() {
 
             CoroutineScope(Dispatchers.IO).launch{
                 val card = viewModel.getCard(cardId)
+
                 activity?.runOnUiThread {
                     binding.card = card
+
                 }
             }
+
+
 
         }
         else{

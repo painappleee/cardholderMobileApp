@@ -2,7 +2,9 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("kotlin-kapt")
+
 }
+
 
 android {
     namespace = "com.example.lsb3"
@@ -11,7 +13,7 @@ android {
     defaultConfig {
         applicationId = "com.example.lsb3"
         minSdk = 26
-        targetSdk = 33
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
@@ -39,6 +41,11 @@ android {
 }
 
 dependencies {
+
+
+    implementation("io.insert-koin:koin-android:3.4.2")
+
+    implementation("io.insert-koin:koin-androidx-compose:3.4.2")
 
     implementation("androidx.core:core-ktx:1.9.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
